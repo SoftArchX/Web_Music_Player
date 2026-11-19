@@ -199,7 +199,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       <button class="ib" type="button" id="btnNext" aria-label="Sonraki" title="Sonraki (N)"></button>
       <button class="ib" type="button" id="btnRepeat" aria-pressed="false" data-mode="off" aria-label="Tekrar: kapalı" title="Tekrar (R)"></button>
     </div>
-    <p class="note" id="fileNote" hidden>Anahtarsız arama ve liste içe aktarma için yerel sunucu gerekir. Dosyaların klasöründe <code>python3 web_music_player_sunucu.py</code> çalıştır; sayfa kendiliğinden <code>http://localhost:8000</code> adresinde açılır. Dosyayı doğrudan açarsan YouTube “Hata 153” de verebilir.</p>
+    <p class="note" id="fileNote" hidden>Dosyayı doğrudan açarsan YouTube “Hata 153” verebilir. GitHub Pages gibi bir https adresinden aç.</p>
   </main>
 
   <section class="queue" id="queue">
@@ -229,7 +229,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     <input id="dlgInput" type="text" autocomplete="off" spellcheck="false" maxlength="200">
     <div class="dlg-act">
       <button class="btn primary" id="dlgOk" value="ok">Tamam</button>
-      <button class="btn" value="cancel" formnovalidate>Vazgeç</button>
+      <button class="btn" id="dlgCancel" value="cancel" formnovalidate>Vazgeç</button>
     </div>
   </form>
 </dialog>
@@ -303,6 +303,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       inp.placeholder = o.placeholder || '';
       inp.type = o.type || 'text';
       ok.textContent = o.ok || 'Tamam';
+      $('#dlgCancel').textContent = o.cancel || 'Vazgeç';
       ok.classList.toggle('danger', !!o.danger);
       ok.classList.toggle('primary', !o.danger);
       const done = () => {
@@ -411,23 +412,6 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
 
   const apiErr = s => s === 400 ? 'API anahtarı geçersiz.' : s === 403 ? 'API kotası dolmuş ya da anahtar bu istek için kısıtlı.' : s === 404 ? 'Bulunamadı.' : 'YouTube API hatası (' + s + ').';
 
-  /* Yerel sunucu: YouTube sayfasını indirip video bağlantılarını ayıklar (API anahtarı gerekmez) */
-  const LOCAL_HELP = 'Anahtarsız arama için yerel sunucuyu çalıştır: python3 web_music_player_sunucu.py';
-  async function localJSON(path) {
-    if (!location.protocol.startsWith('http')) throw new Error(LOCAL_HELP);
-    let r;
-    try { r = await getJSON(path, 20000); }
-    catch (e) { if (e.name === 'AbortError') throw e; throw new Error('Yerel sunucuya ulaşılamadı. ' + LOCAL_HELP); }
-    if (!r.ok) {
-      if (r.status === 404 && !(r.data && r.data.hata)) throw new Error('Bu sayfa yerel sunucudan açılmamış. ' + LOCAL_HELP);
-      throw new Error((r.data && r.data.hata) || 'Yerel sunucu hatası (' + r.status + ').');
-    }
-    return r.data || {};
-  }
-  const cleanItems = arr => (Array.isArray(arr) ? arr : []).filter(i => i && ID_RE.test(i.id || '')).map(i => ({
-    id: i.id, title: clean(i.title, 200) || i.id, author: clean(i.author, 100).replace(/ - Topic$/, '')
-  }));
-
   async function importListApi(listId) {
     const key = encodeURIComponent(getKey());
     let title = 'İçe aktarılan liste';
@@ -452,17 +436,62 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     return { title, items };
   }
 
-  async function importListLocal(listId) {
-    const d = await localJSON('/api/liste?id=' + encodeURIComponent(listId));
-    return { title: clean(d.title, 60) || 'İçe aktarılan liste', items: cleanItems(d.items) };
+  /* Anahtarsız liste içe aktarma: gizli IFrame oynatıcıdan getPlaylist() */
+  function importListPlayer(listId) {
+    return new Promise(async (resolve, reject) => {
+      try { await loadAPI(); } catch { return reject(new Error('YouTube oynatıcısı yüklenemedi.')); }
+      const holder = el('div', { style: 'position:fixed;left:-9999px;top:0;width:200px;height:200px;opacity:0;pointer-events:none' }, el('div', { id: 'plProbe' }));
+      document.body.append(holder);
+      let p, iv, done = false;
+      const to = setTimeout(() => finish(reject, new Error('Liste açılamadı (özel, Mix ya da zaman aşımı).')), 15000);
+      function finish(fn, v) {
+        if (done) return; done = true;
+        clearInterval(iv); clearTimeout(to);
+        try { p.destroy(); } catch { /* yoksay */ }
+        holder.remove(); fn(v);
+      }
+      const vars = { listType: 'playlist', list: listId, playsinline: 1 };
+      if (location.protocol.startsWith('http')) vars.origin = location.origin;
+      p = new YT.Player('plProbe', {
+        host: 'https://www.youtube-nocookie.com', width: '200', height: '200', playerVars: vars,
+        events: {
+          onReady: () => {
+            iv = setInterval(() => {
+              let ids = null;
+              try { ids = p.getPlaylist(); } catch { /* henüz hazır değil */ }
+              if (Array.isArray(ids) && ids.length) {
+                finish(resolve, { title: 'İçe aktarılan liste', items: ids.filter(i => ID_RE.test(i)).map(id => ({ id, title: id, author: '' })) });
+              }
+            }, 400);
+          },
+          onError: () => finish(reject, new Error('Liste açılamadı (özel ya da desteklenmiyor).'))
+        }
+      });
+    });
   }
 
   async function importList(listId) {
     if (getKey()) {
       try { return await importListApi(listId); }
-      catch (e) { if (!location.protocol.startsWith('http')) throw e; }
+      catch { /* anahtar sorunluysa anahtarsız yola düş */ }
     }
-    return importListLocal(listId);
+    return importListPlayer(listId);
+  }
+
+  let rT = 0;
+  async function fillTitles(pl) {
+    const todo = pl.items.filter(i => i.title === i.id);
+    let k = 0;
+    const worker = async () => {
+      while (k < todo.length) {
+        const it = todo[k++];
+        const m = await fetchMeta(it.id);
+        if (!m) bad.add(it.id);
+        else if (m.title !== it.id) { it.title = m.title; it.author = m.author || it.author; }
+        save(); clearTimeout(rT); rT = setTimeout(render, 300);
+      }
+    };
+    await Promise.all(Array.from({ length: 5 }, worker));
   }
 
   async function searchApi(q) {
@@ -472,23 +501,19 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       id: i.id.videoId, title: clean(decode(i.snippet.title), 200) || i.id.videoId, author: clean(decode(i.snippet.channelTitle), 100)
     }));
   }
-  async function searchLocal(q) {
-    const d = await localJSON('/api/ara?q=' + encodeURIComponent(q));
-    return cleanItems(d.items);
-  }
 
   async function search(q) {
-    S.q = q; S.status = 'loading'; S.items = [];
-    setTab('search'); renderSearch();
+    S.q = q; S.items = [];
+    setTab('search');
+    if (!getKey()) {
+      S.status = 'err';
+      S.msg = 'Arama için YouTube API anahtarı gerekir. Üstteki “Ayarlar” düğmesinden ekleyebilirsin. Bağlantı yapıştırmak anahtarsız çalışır.';
+      renderSearch(); return;
+    }
+    S.status = 'loading'; renderSearch();
     if (matchMedia('(max-width:1100px)').matches) $('#queue').scrollIntoView();
     try {
-      let items = null;
-      if (getKey()) {
-        try { items = await searchApi(q); }
-        catch (e) { if (!location.protocol.startsWith('http')) throw e; }
-      }
-      if (items === null) items = await searchLocal(q);
-      S.items = items;
+      S.items = await searchApi(q);
       S.status = S.items.length ? 'ok' : 'none';
     } catch (e) {
       S.status = 'err'; S.msg = e.name === 'AbortError' ? 'İstek zaman aşımına uğradı.' : (e.message || 'Arama başarısız.');
@@ -541,14 +566,16 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
 
   function loadAPI() {
     if (window.YT && window.YT.Player) return Promise.resolve();
-    return new Promise((res, rej) => {
+    if (window.__ytApiP) return window.__ytApiP;
+    window.__ytApiP = new Promise((res, rej) => {
       window.onYouTubeIframeAPIReady = res;
       const s = document.createElement('script');
       s.src = 'https://www.youtube.com/iframe_api';
       s.async = true;
-      s.onerror = () => rej(new Error('api'));
+      s.onerror = () => { window.__ytApiP = null; rej(new Error('api')); };
       document.head.append(s);
     });
+    return window.__ytApiP;
   }
   function ensurePlayer(vid) {
     if (playerP) return playerP;
@@ -780,14 +807,27 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     const vids = [...new Set(toks.map(t => t.vid).filter(Boolean))].slice(0, 50);
     const lists = [...new Set(toks.map(t => t.list).filter(Boolean))].slice(0, 3);
     let target = active(), firstId = null, added = 0, imported = 0;
+
+    const accepted = [];
     for (const l of lists) {
+      const name = await ask({
+        title: 'Oynatma listesi bulundu',
+        message: vids.length
+          ? 'Bu bağlantıda bir oynatma listesi de var. Listeyi yeni bir liste olarak ekleyeyim mi? İstersen ad ver, boş bırakırsan otomatik adlandırılır.'
+          : 'Bu bağlantı bir oynatma listesi. Yeni bir liste olarak ekleyeyim mi? İstersen ad ver, boş bırakırsan otomatik adlandırılır.',
+        input: true, placeholder: 'Liste adı (isteğe bağlı)', ok: 'Evet, ekle', cancel: 'Hayır'
+      });
+      if (name !== null) accepted.push([l, name]);
+    }
+    for (const [l, name] of accepted) {
       try {
         const { title, items } = await importList(l);
         if (!items.length) { toast('Liste boş ya da erişilemiyor.', 'warn'); continue; }
-        const pl = newPlaylist(title);
+        const pl = newPlaylist(name || title);
         addItems(pl, items);
         state.activeId = pl.id; target = pl; firstId = pl.items[0].id; imported++;
         toast(`“${pl.name}” içe aktarıldı (${pl.items.length} video).`, 'ok');
+        fillTitles(pl);
       } catch (e) {
         toast(e.name === 'AbortError' ? 'Liste isteği zaman aşımına uğradı.' : (e.message || 'Liste içe aktarılamadı.'), 'err');
       }
@@ -826,8 +866,8 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
 
   async function openKeyDialog() {
     const v = await ask({
-      title: 'Ayarlar: YouTube API anahtarı (isteğe bağlı)',
-      message: 'Arama ve oynatma listesi içe aktarma artık anahtarsız çalışıyor; bunun için yerel sunucu gerekir (python3 web_music_player_sunucu.py). İstersen YouTube Data API v3 anahtarı ekleyebilirsin; anahtar varsa önce o denenir, hata verirse yerel sunucuya geçilir. Anahtar yalnızca bu tarayıcıda saklanır. Boş bırakıp kaydedersen anahtar silinir.',
+      title: 'Ayarlar: YouTube API anahtarı',
+      message: 'Arama için YouTube Data API v3 anahtarı gerekir (ücretsiz). Bağlantı yapıştırma ve oynatma listesi içe aktarma anahtarsız da çalışır; anahtar varsa liste içe aktarmada önce o denenir. Anahtar yalnızca bu tarayıcıda saklanır. Boş bırakıp kaydedersen silinir.',
       input: true, type: 'password', value: getKey(), placeholder: 'AIza…', ok: 'Kaydet'
     });
     if (v === null) return;

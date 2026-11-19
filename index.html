@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://www.youtube.com https://s.ytimg.com; style-src 'unsafe-inline'; img-src https://i.ytimg.com data:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src https://www.youtube.com https://www.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Akış</title>
+<style>
+:root{
+  color-scheme:dark light;
+  --bg:#0f1317; --panel:#161c22; --raise:#1d252d; --line:#27313b;
+  --text:#e9edf0; --mute:#8f9ca8;
+  --accent:#f0b43c; --accent-ink:#1a1304; --accent-text:#f0b43c;
+  --danger:#ff7a6e; --ok:#6fcf97;
+}
+@media (prefers-color-scheme:light){
+  :root{
+    --bg:#eef1f0; --panel:#ffffff; --raise:#e6ebec; --line:#d5dde1;
+    --text:#14191d; --mute:#566570;
+    --accent:#e0980f; --accent-ink:#1a1204; --accent-text:#8a5800;
+    --danger:#c43c2f; --ok:#1f8a4c;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ——— Yerleşim ——— */
+.app{display:grid;grid-template-columns:230px minmax(0,1fr) 390px;grid-template-rows:auto minmax(0,1fr);height:100dvh}
+.top{grid-column:1/-1;display:flex;gap:12px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{margin:0;font-size:22px;font-weight:700;letter-spacing:-.03em;padding-right:6px}
+.omni{flex:1;display:flex;gap:8px;min-width:0}
+.omni input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.omni input::placeholder{color:var(--mute)}
+.omni.busy{opacity:.65;pointer-events:none}
+.btn{border:1px solid var(--line);background:var(--raise);border-radius:10px;padding:9px 14px;font-weight:600;white-space:nowrap}
+.btn:hover{border-color:var(--mute)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{background:var(--danger);color:#fff;border-color:transparent}
+.btn.small{padding:6px 10px;font-size:13px}
+.ib{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:9px;border:0;background:transparent;color:var(--mute)}
+.ib:hover:not(:disabled){background:var(--raise);color:var(--text)}
+.ib:disabled{opacity:.35;cursor:default}
+
+.side{border-right:1px solid var(--line);overflow:auto;padding:14px 10px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.side h2{margin:0 6px;font-size:13px;color:var(--mute);font-weight:600}
+#plList{display:flex;flex-direction:column;gap:2px}
+.pl{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:transparent;border-radius:9px;padding:9px 10px}
+.pl:hover{background:var(--raise)}
+.pl.on{background:var(--raise);box-shadow:inset 3px 0 0 var(--accent)}
+.pl-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-n{color:var(--mute);font-size:12.5px;font-variant-numeric:tabular-nums}
+.pl .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:6px}
+.side-foot .row2{display:flex;gap:6px}
+.side-foot .row2 .btn{flex:1}
+.keys{margin:6px 0 0;color:var(--mute);font-size:12px;line-height:1.6}
+
+.stage{overflow:auto;padding:18px 22px;min-width:0}
+.screen{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100dvh - 270px);background:#000;border-radius:12px;overflow:hidden;margin:0 auto}
+#player{position:absolute;inset:0;width:100%;height:100%;border:0}
+.empty{position:absolute;inset:0;display:grid;place-content:center;gap:6px;text-align:center;padding:24px;color:#aab4bd}
+.empty strong{font-size:18px;color:#f1f4f6;font-weight:600}
+.now{max-width:1100px;margin:16px auto 0}
+.now h2{margin:0;font-size:clamp(20px,2.4vw,28px);line-height:1.2;font-weight:650;letter-spacing:-.015em;overflow-wrap:anywhere}
+.now p{margin:4px 0 0;color:var(--mute)}
+.ctrl{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px auto 0;max-width:1100px}
+.ctrl .ib{width:44px;height:44px;border-radius:50%}
+.ctrl .ib .ic{width:22px;height:22px}
+.ctrl .ib[aria-pressed="true"]{color:var(--accent-text);background:var(--raise)}
+.ctrl .big{width:60px;height:60px;background:var(--accent);color:var(--accent-ink)}
+.ctrl .big:hover:not(:disabled){background:var(--accent);color:var(--accent-ink);filter:brightness(1.07)}
+.ctrl .big .ic{width:26px;height:26px}
+#btnRepeat{position:relative}
+#btnRepeat[data-mode="one"]::after{content:"1";position:absolute;right:7px;bottom:6px;font-size:10px;font-weight:800;color:var(--accent-text)}
+.note{margin:12px auto 0;max-width:1100px;padding:10px 14px;border-radius:10px;background:var(--raise);color:var(--text);font-size:13.5px;border-left:3px solid var(--accent)}
+.note code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+
+.queue{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:var(--panel)}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:12px;background:transparent;border:0;color:var(--mute);font-weight:600;border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+.panel{flex:1;min-height:0;overflow:auto;padding:10px}
+.pl-head{display:flex;align-items:center;gap:4px;padding:2px 4px 8px}
+.pl-head h2{flex:1;margin:0;font-size:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;border-radius:10px;content-visibility:auto;contain-intrinsic-size:auto 66px}
+.row:hover{background:var(--raise)}
+.row.drag{opacity:.4}
+.row.over{box-shadow:0 -2px 0 var(--accent)}
+.row-main{display:flex;gap:10px;align-items:center;text-align:left;background:none;border:0;padding:5px;min-width:0;border-radius:8px}
+.thw{position:relative;flex:none;width:96px;height:54px}
+.th{width:96px;height:54px;object-fit:cover;border-radius:6px;background:var(--line);display:block}
+.meta{display:grid;min-width:0;gap:1px}
+.t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:550;line-height:1.3;overflow-wrap:anywhere}
+.a{color:var(--mute);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-act{display:flex;opacity:0;transition:opacity .12s}
+.row:hover .row-act,.row:focus-within .row-act{opacity:1}
+@media (hover:none){.row-act{opacity:1}}
+.row.playing .t{color:var(--accent-text)}
+.row.bad .th{filter:grayscale(1) brightness(.6)}
+.row.bad .t{text-decoration:line-through;color:var(--mute)}
+.eq{position:absolute;right:4px;bottom:4px;display:none;gap:2px;height:14px;align-items:flex-end;background:rgba(0,0,0,.72);padding:3px 4px;border-radius:4px}
+.row.playing .eq{display:flex}
+.eq i{display:block;width:3px;height:100%;background:var(--accent);transform-origin:bottom;transform:scaleY(.35)}
+body.is-playing .row.playing .eq i{animation:eq .9s ease-in-out infinite}
+body.is-playing .row.playing .eq i:nth-child(2){animation-delay:-.3s}
+body.is-playing .row.playing .eq i:nth-child(3){animation-delay:-.6s}
+@keyframes eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){body.is-playing .row.playing .eq i{animation:none;transform:scaleY(.7)}}
+.hint{color:var(--mute);padding:18px 10px;text-align:center}
+.hint.err{color:var(--danger)}
+
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:22px;width:min(440px,92vw)}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog h2{margin:0 0 8px;font-size:18px}
+dialog p{margin:0 0 14px;color:var(--mute);font-size:14px}
+dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:16px}
+.dlg-act{display:flex;gap:8px;justify-content:flex-start;flex-direction:row-reverse}
+#toasts{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:50;width:min(480px,92vw);pointer-events:none}
+.toast{background:var(--raise);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:14px}
+.toast.err{border-left-color:var(--danger)}
+.toast.ok{border-left-color:var(--ok)}
+
+@media (max-width:1100px){
+  .app{grid-template-columns:210px minmax(0,1fr);grid-template-rows:auto auto auto;height:auto;min-height:100dvh}
+  .queue{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}
+  .panel{max-height:none;overflow:visible}
+  .screen{max-height:none}
+}
+@media (max-width:700px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .top{flex-wrap:wrap;padding:10px 12px}
+  .brand{flex:1}
+  .omni{order:3;flex:1 0 100%;flex-wrap:wrap}
+  .omni input{flex:1 0 100%}
+  .omni .btn{flex:1}
+  .stage{order:1;padding:12px}
+  .side{order:2;border-right:0;border-bottom:1px solid var(--line);padding:10px 12px}
+  .queue{order:3}
+  #plList{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .pl{width:auto;flex:none;border:1px solid var(--line)}
+  .side-foot .keys{display:none}
+  .thw,.th{width:84px;height:47px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1 class="brand">Akış</h1>
+    <form class="omni" id="addForm" autocomplete="off">
+      <input id="omni" type="text" inputmode="url" placeholder="YouTube bağlantısı yapıştır veya video ara  ( / )" aria-label="YouTube bağlantısı veya arama" spellcheck="false" maxlength="2000">
+      <button class="btn primary" type="submit">Çal</button>
+      <button class="btn" type="button" id="btnAdd">Listeye ekle</button>
+    </form>
+    <button class="btn" type="button" id="btnKey">Ayarlar</button>
+  </header>
+
+  <aside class="side">
+    <h2>Çalma listeleri</h2>
+    <nav id="plList" aria-label="Çalma listeleri"></nav>
+    <button class="btn small" type="button" id="btnNewPl">Yeni liste</button>
+    <div class="side-foot">
+      <div class="row2">
+        <button class="btn small" type="button" id="btnExport">Dışa aktar</button>
+        <button class="btn small" type="button" id="btnImport">İçe aktar</button>
+      </div>
+      <p class="keys">Kısayollar: N sonraki, P önceki, K oynat/duraklat, S karıştır, R tekrar, / arama kutusu.</p>
+      <input id="fileIn" type="file" accept="application/json,.json" hidden>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="screen">
+      <div id="player"></div>
+      <div class="empty" id="empty">
+        <strong>Henüz bir şey çalmıyor</strong>
+        <span>Üstteki kutuya bir YouTube bağlantısı yapıştır, Enter’a bas.</span>
+      </div>
+    </div>
+    <div class="now">
+      <h2 id="nowTitle">Hiçbir şey çalmıyor</h2>
+      <p id="nowSub"></p>
+    </div>
+    <div class="ctrl" role="group" aria-label="Oynatma denetimleri">
+      <button class="ib" type="button" id="btnShuffle" aria-pressed="false" aria-label="Karıştır" title="Karıştır (S)"></button>
+      <button class="ib" type="button" id="btnPrev" aria-label="Önceki" title="Önceki (P)"></button>
+      <button class="ib big" type="button" id="btnPlay" aria-label="Oynat" title="Oynat / duraklat (K)"></button>
+      <button class="ib" type="button" id="btnNext" aria-label="Sonraki" title="Sonraki (N)"></button>
+      <button class="ib" type="button" id="btnRepeat" aria-pressed="false" data-mode="off" aria-label="Tekrar: kapalı" title="Tekrar (R)"></button>
+    </div>
+    <p class="note" id="fileNote" hidden>Bu dosyayı doğrudan açtığın için YouTube “Hata 153” verebilir ve API anahtarı kısıtlamaları çalışmaz. Dosyanın klasöründe <code>python3 -m http.server 8000</code> çalıştırıp <code>http://localhost:8000/akis.html</code> adresini aç.</p>
+  </main>
+
+  <section class="queue" id="queue">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tabList" aria-selected="true" aria-controls="panelList">Liste</button>
+      <button type="button" role="tab" id="tabSearch" aria-selected="false" aria-controls="panelSearch">Arama</button>
+    </div>
+    <div class="panel" id="panelList" role="tabpanel" aria-labelledby="tabList">
+      <div class="pl-head">
+        <h2 id="plTitle"></h2>
+        <button class="ib" type="button" id="btnRename" aria-label="Listeyi yeniden adlandır" title="Yeniden adlandır"></button>
+        <button class="ib" type="button" id="btnDelPl" aria-label="Listeyi sil" title="Listeyi sil"></button>
+      </div>
+      <ul class="rows" id="items"></ul>
+    </div>
+    <div class="panel" id="panelSearch" role="tabpanel" aria-labelledby="tabSearch" hidden>
+      <p class="hint" id="searchStatus"></p>
+      <ul class="rows" id="results"></ul>
+    </div>
+  </section>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <form method="dialog">
+    <h2 id="dlgTitle"></h2>
+    <p id="dlgMsg"></p>
+    <input id="dlgInput" type="text" autocomplete="off" spellcheck="false" maxlength="200">
+    <div class="dlg-act">
+      <button class="btn primary" id="dlgOk" value="ok">Tamam</button>
+      <button class="btn" value="cancel" formnovalidate>Vazgeç</button>
+    </div>
+  </form>
+</dialog>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+'use strict';
+(() => {
+  /* ——— Yardımcılar ——— */
+  const $ = s => document.querySelector(s);
+  const ID_RE = /^[\w-]{11}$/;
+  const LIST_RE = /^[\w-]{10,64}$/;
+  const LS = 'akis.v1', LS_KEY = 'akis.apikey';
+  const uid = () => Math.random().toString(36).slice(2, 10);
+  const clean = (s, n) => typeof s === 'string' ? s.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, n) : '';
+  const decode = s => new DOMParser().parseFromString(String(s || ''), 'text/html').documentElement.textContent || '';
+
+  function el(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') e.className = v;
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else if (v === true) e.setAttribute(k, '');
+      else e.setAttribute(k, v);
+    }
+    for (const k of kids.flat()) if (k != null) e.append(k);
+    return e;
+  }
+
+  const ICONS = {
+    play: '<path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/>',
+    pause: '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" stroke="none"/>',
+    prev: '<path d="M18 5v14L8.5 12z" fill="currentColor" stroke="none"/><path d="M6 5v14"/>',
+    next: '<path d="M6 5v14l9.5-7z" fill="currentColor" stroke="none"/><path d="M18 5v14"/>',
+    shuffle: '<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+    repeat: '<path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/>',
+    up: '<path d="M6 15l6-6 6 6"/>',
+    down: '<path d="M6 9l6 6 6-6"/>',
+    close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+    trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'
+  };
+  function icon(name) {
+    const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('viewBox', '0 0 24 24');
+    s.setAttribute('aria-hidden', 'true');
+    s.setAttribute('class', 'ic');
+    s.innerHTML = ICONS[name];
+    return s;
+  }
+  const ibtn = (name, label, fn, extra) =>
+    el('button', Object.assign({ class: 'ib', type: 'button', 'aria-label': label, title: label, onclick: fn }, extra || {}), icon(name));
+
+  function toast(msg, kind) {
+    const t = el('div', { class: 'toast ' + (kind || '') }, msg);
+    $('#toasts').append(t);
+    setTimeout(() => t.remove(), 4200);
+  }
+
+  function ask(o) {
+    return new Promise(resolve => {
+      const d = $('#dlg'), inp = $('#dlgInput'), ok = $('#dlgOk');
+      $('#dlgTitle').textContent = o.title;
+      $('#dlgMsg').textContent = o.message || '';
+      $('#dlgMsg').hidden = !o.message;
+      inp.hidden = !o.input;
+      inp.value = o.value || '';
+      inp.placeholder = o.placeholder || '';
+      inp.type = o.type || 'text';
+      ok.textContent = o.ok || 'Tamam';
+      ok.classList.toggle('danger', !!o.danger);
+      ok.classList.toggle('primary', !o.danger);
+      const done = () => {
+        d.removeEventListener('close', done);
+        resolve(d.returnValue === 'ok' ? (o.input ? inp.value.trim() : true) : null);
+      };
+      d.addEventListener('close', done);
+      d.returnValue = '';
+      d.showModal();
+      if (o.input) inp.select(); else ok.focus();
+    });
+  }
+
+  async function getJSON(url, ms = 9000) {
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), ms);
+    try {
+      const r = await fetch(url, { signal: c.signal, credentials: 'omit' });
+      let data = null;
+      if (r.ok) data = await r.json();
+      return { ok: r.ok, status: r.status, data };
+    } finally { clearTimeout(t); }
+  }
+
+  /* ——— Durum ——— */
+  let state = {
+    playlists: [{ id: uid(), name: 'Kitaplık', items: [] }],
+    activeId: null, shuffle: false, repeat: 'off', now: null
+  };
+  let playing = false, hist = [], errStreak = 0;
+  const played = new Set(), bad = new Set();
+  const S = { q: '', items: [], status: 'idle', msg: '' };
+
+  const plById = id => state.playlists.find(p => p.id === id);
+  const active = () => plById(state.activeId) || state.playlists[0];
+  const curItem = () => {
+    const n = state.now; if (!n) return null;
+    const pl = plById(n.plId);
+    return (pl && pl.items.find(x => x.id === n.vid)) || null;
+  };
+  const getKey = () => { try { const k = localStorage.getItem(LS_KEY) || ''; return /^[\w-]{20,80}$/.test(k) ? k : ''; } catch { return ''; } };
+
+  function sanitizePlaylists(arr) {
+    if (!Array.isArray(arr)) return [];
+    const ids = new Set();
+    return arr.slice(0, 200).map(p => {
+      if (!p || typeof p !== 'object') return null;
+      let id = clean(String(p.id || ''), 20).replace(/[^\w-]/g, '') || uid();
+      while (ids.has(id)) id = uid();
+      ids.add(id);
+      const seen = new Set();
+      const items = (Array.isArray(p.items) ? p.items : []).slice(0, 2000).filter(i => {
+        if (!i || typeof i.id !== 'string' || !ID_RE.test(i.id) || seen.has(i.id)) return false;
+        seen.add(i.id); return true;
+      }).map(i => ({ id: i.id, title: clean(i.title, 200) || i.id, author: clean(i.author, 100) }));
+      return { id, name: clean(p.name, 60) || 'Adsız liste', items };
+    }).filter(Boolean);
+  }
+
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem(LS) || 'null');
+      const pls = d && sanitizePlaylists(d.playlists);
+      if (pls && pls.length) {
+        state.playlists = pls;
+        state.activeId = d.activeId;
+        state.shuffle = !!d.shuffle;
+        state.repeat = ['off', 'all', 'one'].includes(d.repeat) ? d.repeat : 'off';
+        if (d.now && plById(d.now.plId) && plById(d.now.plId).items.some(i => i.id === d.now.vid)) state.now = { plId: d.now.plId, vid: d.now.vid };
+      }
+    } catch { /* bozuk veri: sıfırdan başla */ }
+    if (!plById(state.activeId)) state.activeId = state.playlists[0].id;
+  }
+  let saveT = 0;
+  function flush() {
+    try { localStorage.setItem(LS, JSON.stringify({ v: 1, playlists: state.playlists, activeId: state.activeId, shuffle: state.shuffle, repeat: state.repeat, now: state.now })); } catch { /* depolama kapalı olabilir */ }
+  }
+  function save() { clearTimeout(saveT); saveT = setTimeout(flush, 150); }
+
+  /* ——— Bağlantı çözümleme ——— */
+  function parseYT(s) {
+    if (ID_RE.test(s)) return (/[0-9_-]/.test(s) || (/[a-z]/.test(s) && /[A-Z]/.test(s))) ? { vid: s } : null;
+    let u;
+    try { u = new URL(/^https?:\/\//i.test(s) ? s : 'https://' + s); } catch { return null; }
+    const h = u.hostname.toLowerCase().replace(/^(www\.|m\.|music\.)/, '');
+    let vid = null, list = null;
+    if (h === 'youtu.be') vid = u.pathname.slice(1).split('/')[0];
+    else if (h === 'youtube.com' || h === 'youtube-nocookie.com') {
+      if (u.pathname === '/watch') vid = u.searchParams.get('v');
+      else { const m = u.pathname.match(/^\/(embed|shorts|live|v)\/([\w-]{11})/); if (m) vid = m[2]; }
+      list = u.searchParams.get('list');
+    } else return null;
+    if (vid && !ID_RE.test(vid)) vid = null;
+    if (list && !LIST_RE.test(list)) list = null;
+    return (vid || list) ? { vid, list } : null;
+  }
+
+  async function fetchMeta(id) {
+    try {
+      const r = await getJSON('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + id));
+      if (r.ok) return { title: clean(r.data.title, 200) || id, author: clean(r.data.author_name, 100) };
+      if ([400, 401, 403, 404].includes(r.status)) return null;
+    } catch { /* ağ hatası: yer tutucu ile ekle */ }
+    return { title: id, author: '' };
+  }
+
+  const apiErr = s => s === 400 ? 'API anahtarı geçersiz.' : s === 403 ? 'API kotası dolmuş ya da anahtar bu istek için kısıtlı.' : s === 404 ? 'Bulunamadı.' : 'YouTube API hatası (' + s + ').';
+
+  async function importList(listId) {
+    const key = encodeURIComponent(getKey());
+    let title = 'İçe aktarılan liste';
+    try {
+      const m = await getJSON(`https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${listId}&key=${key}`);
+      if (m.ok && m.data.items && m.data.items[0]) title = clean(decode(m.data.items[0].snippet.title), 60) || title;
+    } catch { /* başlık zorunlu değil */ }
+    const items = [];
+    let token = '';
+    for (let page = 0; page < 10; page++) {
+      const r = await getJSON(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${listId}${token ? '&pageToken=' + encodeURIComponent(token) : ''}&key=${key}`);
+      if (!r.ok) throw new Error(apiErr(r.status));
+      for (const it of r.data.items || []) {
+        const sn = it.snippet || {};
+        const id = sn.resourceId && sn.resourceId.videoId;
+        if (!id || !ID_RE.test(id) || sn.title === 'Private video' || sn.title === 'Deleted video') continue;
+        items.push({ id, title: clean(decode(sn.title), 200) || id, author: clean(decode(sn.videoOwnerChannelTitle || ''), 100).replace(/ - Topic$/, '') });
+      }
+      token = r.data.nextPageToken;
+      if (!token) break;
+    }
+    return { title, items };
+  }
+
+  async function search(q) {
+    if (!getKey()) {
+      toast('Arama için ayarlardan YouTube Data API anahtarı ekle. Bağlantı yapıştırmak anahtar gerektirmez.', 'warn');
+      openKeyDialog();
+      return;
+    }
+    S.q = q; S.status = 'loading'; S.items = [];
+    setTab('search'); renderSearch();
+    if (matchMedia('(max-width:1100px)').matches) $('#queue').scrollIntoView();
+    try {
+      const r = await getJSON(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=20&q=${encodeURIComponent(q)}&key=${encodeURIComponent(getKey())}`);
+      if (!r.ok) throw new Error(apiErr(r.status));
+      S.items = (r.data.items || []).filter(i => i.id && ID_RE.test(i.id.videoId || '')).map(i => ({
+        id: i.id.videoId, title: clean(decode(i.snippet.title), 200) || i.id.videoId, author: clean(decode(i.snippet.channelTitle), 100)
+      }));
+      S.status = S.items.length ? 'ok' : 'none';
+    } catch (e) {
+      S.status = 'err'; S.msg = e.name === 'AbortError' ? 'İstek zaman aşımına uğradı.' : (e.message || 'Arama başarısız.');
+    }
+    renderSearch();
+  }
+
+  /* ——— Liste işlemleri ——— */
+  function newPlaylist(name) {
+    const pl = { id: uid(), name: clean(name, 60) || 'Yeni liste', items: [] };
+    state.playlists.push(pl);
+    return pl;
+  }
+  function addItems(pl, items) {
+    const have = new Set(pl.items.map(i => i.id));
+    let n = 0;
+    for (const it of items) {
+      if (!ID_RE.test(it.id) || have.has(it.id) || pl.items.length >= 2000) continue;
+      have.add(it.id); pl.items.push({ id: it.id, title: it.title, author: it.author || '' }); n++;
+    }
+    if (n) { save(); render(); }
+    return n;
+  }
+  function move(from, to) {
+    const pl = active();
+    if (from === to || from < 0 || to < 0 || from >= pl.items.length || to >= pl.items.length) return;
+    const [x] = pl.items.splice(from, 1);
+    pl.items.splice(to, 0, x);
+    save(); render();
+  }
+  function stopAll() {
+    state.now = null; playing = false; hist = []; played.clear();
+    try { if (player && ready) player.stopVideo(); } catch { /* yoksay */ }
+    save(); render();
+  }
+  function removeItem(pl, idx) {
+    const it = pl.items[idx]; if (!it) return;
+    const wasCur = state.now && state.now.plId === pl.id && state.now.vid === it.id;
+    pl.items.splice(idx, 1);
+    if (wasCur) {
+      const n = pl.items.length;
+      if (n) playVid(pl.id, pl.items[Math.min(idx, n - 1)].id, { back: true });
+      else stopAll();
+    }
+    save(); render();
+  }
+
+  /* ——— Oynatıcı (resmî YouTube IFrame API) ——— */
+  let player = null, ready = false, playerP = null;
+
+  function loadAPI() {
+    if (window.YT && window.YT.Player) return Promise.resolve();
+    return new Promise((res, rej) => {
+      window.onYouTubeIframeAPIReady = res;
+      const s = document.createElement('script');
+      s.src = 'https://www.youtube.com/iframe_api';
+      s.async = true;
+      s.onerror = () => rej(new Error('api'));
+      document.head.append(s);
+    });
+  }
+  function ensurePlayer(vid) {
+    if (playerP) return playerP;
+    playerP = (async () => {
+      try { await loadAPI(); } catch { toast('YouTube oynatıcısı yüklenemedi. İnternet bağlantını kontrol et.', 'err'); return null; }
+      return new Promise(res => {
+        const vars = { playsinline: 1, rel: 0, modestbranding: 1, iv_load_policy: 3, autoplay: 1 };
+        if (location.protocol.startsWith('http')) vars.origin = location.origin;
+        player = new YT.Player('player', {
+          host: 'https://www.youtube-nocookie.com', width: '100%', height: '100%', videoId: vid, playerVars: vars,
+          events: { onReady: () => { ready = true; res(player); }, onStateChange: onState, onError: onErr }
+        });
+      });
+    })().then(p => { if (!p) playerP = null; return p; });
+    return playerP;
+  }
+
+  async function playVid(plId, vid, opt) {
+    opt = opt || {};
+    const pl = plById(plId); if (!pl) return;
+    const cur = state.now;
+    if (!cur || cur.plId !== plId) { hist = []; played.clear(); }
+    else if (!opt.back && cur.vid !== vid) { hist.push(cur.vid); if (hist.length > 200) hist.shift(); }
+    state.now = { plId, vid };
+    played.add(vid);
+    save(); render();
+    const first = !playerP;
+    const p = await ensurePlayer(vid);
+    if (!p) return;
+    if (!first) { try { player.loadVideoById(vid); } catch { /* yoksay */ } }
+  }
+
+  function pickNext(pl, i, auto) {
+    const n = pl.items.length; if (!n) return null;
+    const ok = k => !bad.has(pl.items[k].id);
+    if (state.shuffle) {
+      const all = [...Array(n).keys()];
+      let c = all.filter(k => k !== i && ok(k) && !played.has(pl.items[k].id));
+      if (!c.length) {
+        if (auto && state.repeat !== 'all') return null;
+        played.clear();
+        c = all.filter(k => k !== i && ok(k));
+        if (!c.length) return (i >= 0 && ok(i)) ? pl.items[i] : null;
+      }
+      return pl.items[c[Math.floor(Math.random() * c.length)]];
+    }
+    for (let s = 1; s <= n; s++) {
+      const k = i + s;
+      if (k >= n && auto && state.repeat !== 'all') return null;
+      const kk = k % n;
+      if (ok(kk)) return pl.items[kk];
+    }
+    return null;
+  }
+
+  function go(dir, auto) {
+    const now = state.now;
+    if (!now) { const pl = active(); if (pl.items[0]) playVid(pl.id, pl.items[0].id); return; }
+    const pl = plById(now.plId);
+    if (!pl || !pl.items.length) { stopAll(); return; }
+    const i = pl.items.findIndex(x => x.id === now.vid);
+    if (dir < 0) {
+      if (player && ready) { try { if (player.getCurrentTime() > 3) { player.seekTo(0, true); return; } } catch { /* yoksay */ } }
+      const prev = hist.pop();
+      if (prev && pl.items.some(x => x.id === prev)) { playVid(pl.id, prev, { back: true }); return; }
+      const n = pl.items.length;
+      playVid(pl.id, pl.items[((i < 0 ? 0 : i) - 1 + n) % n].id, { back: true });
+      return;
+    }
+    if (auto && state.repeat === 'one' && i >= 0 && !bad.has(now.vid)) { playVid(pl.id, now.vid); return; }
+    const nxt = pickNext(pl, i, !!auto);
+    if (!nxt) { playing = false; renderControls(); return; }
+    playVid(pl.id, nxt.id);
+  }
+
+  function togglePlay(want) {
+    if (!player || !ready) {
+      if (want !== false) { if (state.now) playVid(state.now.plId, state.now.vid); else go(1); }
+      return;
+    }
+    const w = want === undefined ? !playing : want;
+    try { if (w) player.playVideo(); else player.pauseVideo(); } catch { /* yoksay */ }
+  }
+
+  function onState(e) {
+    const PS = YT.PlayerState;
+    if (e.data === PS.ENDED) { playing = false; renderControls(); go(1, true); return; }
+    if (e.data === PS.PLAYING) { errStreak = 0; playing = true; fixMeta(); updateMedia(); }
+    else if (e.data === PS.PAUSED) playing = false;
+    renderControls();
+  }
+  function onErr() {
+    const n = state.now; if (!n) return;
+    bad.add(n.vid); errStreak++;
+    render();
+    const pl = plById(n.plId);
+    if (!pl || errStreak >= pl.items.length) { toast('Listedeki videolar oynatılamıyor.', 'err'); playing = false; renderControls(); return; }
+    toast('Bu video oynatılamıyor (silinmiş, özel ya da gömülmesi kapalı). Sıradakine geçiliyor.', 'warn');
+    setTimeout(() => go(1, true), 700);
+  }
+  function fixMeta() {
+    const it = curItem(); if (!it || !player) return;
+    try {
+      const d = player.getVideoData();
+      if (!d || d.video_id !== it.id) return;
+      let ch = false;
+      if (d.title && it.title === it.id) { it.title = clean(d.title, 200); ch = true; }
+      if (d.author && !it.author) { it.author = clean(d.author, 100); ch = true; }
+      if (ch) { save(); render(); }
+    } catch { /* yoksay */ }
+  }
+  function updateMedia() {
+    if (!('mediaSession' in navigator)) return;
+    const it = curItem(); if (!it) return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: it.title, artist: it.author,
+        artwork: [{ src: `https://i.ytimg.com/vi/${it.id}/hqdefault.jpg`, sizes: '480x360', type: 'image/jpeg' }]
+      });
+    } catch { /* yoksay */ }
+  }
+
+  /* ——— Çizim ——— */
+  function rowEl(it, o) {
+    return el('li', Object.assign({ class: 'row' + (o.playing ? ' playing' : '') + (o.bad ? ' bad' : '') }, o.idx != null ? { draggable: 'true', 'data-i': String(o.idx) } : {}),
+      el('button', { class: 'row-main', type: 'button', onclick: o.main, 'aria-label': 'Çal: ' + it.title },
+        el('span', { class: 'thw' },
+          el('img', { class: 'th', src: `https://i.ytimg.com/vi/${it.id}/mqdefault.jpg`, alt: '', loading: 'lazy', decoding: 'async', width: '96', height: '54', referrerpolicy: 'no-referrer' }),
+          el('span', { class: 'eq', 'aria-hidden': 'true' }, el('i'), el('i'), el('i'))),
+        el('span', { class: 'meta' }, el('span', { class: 't' }, it.title), el('span', { class: 'a' }, o.bad ? 'Oynatılamıyor' : (it.author || '')))),
+      el('span', { class: 'row-act' }, o.acts || []));
+  }
+
+  function renderSide() {
+    $('#plList').replaceChildren(...state.playlists.map(p =>
+      el('button', {
+        class: 'pl' + (p.id === state.activeId ? ' on' : ''), type: 'button',
+        'aria-current': p.id === state.activeId ? 'true' : null,
+        onclick: () => { state.activeId = p.id; save(); render(); }
+      },
+        el('span', { class: 'pl-name' }, p.name),
+        state.now && state.now.plId === p.id ? el('span', { class: 'dot', title: 'Bu listeden çalıyor' }) : null,
+        el('span', { class: 'pl-n' }, String(p.items.length)))));
+  }
+
+  function renderList() {
+    const pl = active();
+    $('#plTitle').textContent = pl.name;
+    const ul = $('#items');
+    if (!pl.items.length) {
+      ul.replaceChildren(el('li', { class: 'hint' }, 'Bu liste boş. Bir YouTube bağlantısı yapıştır, “Listeye ekle”ye bas.'));
+      return;
+    }
+    ul.replaceChildren(...pl.items.map((it, i) => rowEl(it, {
+      idx: i,
+      playing: !!state.now && state.now.plId === pl.id && state.now.vid === it.id,
+      bad: bad.has(it.id),
+      main: () => { errStreak = 0; bad.delete(it.id); playVid(pl.id, it.id); },
+      acts: [
+        ibtn('up', 'Yukarı taşı', () => move(i, i - 1), { disabled: i === 0 }),
+        ibtn('down', 'Aşağı taşı', () => move(i, i + 1), { disabled: i === pl.items.length - 1 }),
+        ibtn('close', 'Listeden çıkar', () => removeItem(pl, i))
+      ]
+    })));
+  }
+
+  function renderSearch() {
+    const st = $('#searchStatus'), ul = $('#results');
+    st.className = 'hint';
+    if (S.status === 'idle') {
+      st.hidden = false;
+      st.textContent = getKey() ? 'Üstteki kutuya bir şey yazıp Enter’a bas.' : 'Arama için ayarlardan YouTube Data API anahtarı ekle. Bağlantı yapıştırmak anahtar gerektirmez.';
+      ul.replaceChildren(); return;
+    }
+    if (S.status === 'loading') { st.hidden = false; st.textContent = 'Aranıyor…'; ul.replaceChildren(); return; }
+    if (S.status === 'err') { st.hidden = false; st.classList.add('err'); st.textContent = S.msg; ul.replaceChildren(); return; }
+    if (S.status === 'none') { st.hidden = false; st.textContent = '“' + S.q + '” için sonuç bulunamadı.'; ul.replaceChildren(); return; }
+    st.hidden = true;
+    const pl = active();
+    ul.replaceChildren(...S.items.map(it => {
+      const inList = pl.items.some(x => x.id === it.id);
+      return rowEl(it, {
+        main: () => { addItems(active(), [it]); playVid(active().id, it.id); },
+        acts: [inList ? ibtn('check', 'Listede', () => {}, { disabled: true }) : ibtn('plus', 'Listeye ekle', () => { addItems(active(), [it]); toast('Eklendi: ' + it.title, 'ok'); })]
+      });
+    }));
+  }
+
+  function renderNow() {
+    const it = curItem();
+    $('#nowTitle').textContent = it ? it.title : 'Hiçbir şey çalmıyor';
+    const pl = state.now && plById(state.now.plId);
+    $('#nowSub').textContent = it ? [it.author, pl ? 'Liste: ' + pl.name : ''].filter(Boolean).join(' • ') : '';
+    $('#empty').hidden = !!state.now;
+    document.title = it ? it.title + ' — Akış' : 'Akış';
+  }
+
+  function renderControls() {
+    const pp = $('#btnPlay');
+    pp.replaceChildren(icon(playing ? 'pause' : 'play'));
+    pp.setAttribute('aria-label', playing ? 'Duraklat' : 'Oynat');
+    $('#btnShuffle').setAttribute('aria-pressed', String(state.shuffle));
+    const rp = $('#btnRepeat');
+    rp.dataset.mode = state.repeat;
+    rp.setAttribute('aria-pressed', String(state.repeat !== 'off'));
+    rp.setAttribute('aria-label', 'Tekrar: ' + { off: 'kapalı', all: 'liste', one: 'tek video' }[state.repeat]);
+    document.body.classList.toggle('is-playing', playing);
+    if ('mediaSession' in navigator) { try { navigator.mediaSession.playbackState = playing ? 'playing' : 'paused'; } catch { /* yoksay */ } }
+  }
+
+  function render() { renderSide(); renderList(); renderSearch(); renderNow(); renderControls(); }
+
+  function setTab(name) {
+    const s = name === 'search';
+    $('#tabList').setAttribute('aria-selected', String(!s));
+    $('#tabSearch').setAttribute('aria-selected', String(s));
+    $('#panelList').hidden = s;
+    $('#panelSearch').hidden = !s;
+  }
+
+  /* ——— Eylemler ——— */
+  function busy(b) {
+    $('#addForm').classList.toggle('busy', b);
+    $('#addForm').querySelectorAll('button,input').forEach(x => { x.disabled = b; });
+    if (!b) $('#omni').focus();
+  }
+
+  async function handleLinks(toks, mode) {
+    const vids = [...new Set(toks.map(t => t.vid).filter(Boolean))].slice(0, 50);
+    const lists = [...new Set(toks.map(t => t.list).filter(Boolean))].slice(0, 3);
+    let target = active(), firstId = null, added = 0;
+    if (lists.length) {
+      if (!getKey()) {
+        toast('YouTube oynatma listesini içe aktarmak için ayarlardan API anahtarı ekle.', 'warn');
+        if (!vids.length) { openKeyDialog(); return false; }
+      } else {
+        for (const l of lists) {
+          const { title, items } = await importList(l);
+          if (!items.length) { toast('Liste boş ya da erişilemiyor.', 'warn'); continue; }
+          const pl = newPlaylist(title);
+          addItems(pl, items);
+          state.activeId = pl.id; target = pl; firstId = pl.items[0].id;
+          toast(`“${pl.name}” içe aktarıldı (${pl.items.length} video).`, 'ok');
+        }
+      }
+    }
+    if (vids.length) {
+      const have = new Set(target.items.map(i => i.id));
+      const fresh = vids.filter(v => !have.has(v));
+      const metas = await Promise.all(fresh.map(fetchMeta));
+      const items = [];
+      fresh.forEach((id, k) => {
+        if (metas[k]) items.push({ id, title: metas[k].title, author: metas[k].author });
+        else toast('Video bulunamadı ya da gömülmesi kapalı: ' + id, 'warn');
+      });
+      added = addItems(target, items);
+      if (target.items.some(i => i.id === vids[0])) firstId = vids[0];
+    }
+    save();
+    if (mode === 'play' && firstId) playVid(target.id, firstId);
+    else { render(); if (added) toast(added + ' video listeye eklendi.', 'ok'); }
+    return true;
+  }
+
+  async function submit(mode) {
+    const raw = $('#omni').value.trim();
+    if (!raw) return;
+    busy(true);
+    try {
+      const toks = raw.split(/\s+/).map(parseYT);
+      if (toks.every(Boolean)) { if (await handleLinks(toks, mode)) $('#omni').value = ''; }
+      else await search(raw);
+    } catch (e) {
+      toast(e.name === 'AbortError' ? 'İstek zaman aşımına uğradı.' : (e.message || 'Bir şeyler ters gitti.'), 'err');
+    } finally { busy(false); }
+  }
+
+  async function openKeyDialog() {
+    const v = await ask({
+      title: 'YouTube API anahtarı',
+      message: 'Arama ve oynatma listesi içe aktarma için YouTube Data API v3 anahtarı gerekir; bağlantı yapıştırarak oynatma anahtarsız çalışır. Anahtar yalnızca bu tarayıcıda saklanır. Google Cloud’da anahtarı yalnızca YouTube Data API v3 ve kendi adresinle (HTTP yönlendiren) sınırlamanı öneririm. Boş bırakıp kaydedersen anahtar silinir.',
+      input: true, type: 'password', value: getKey(), placeholder: 'AIza…', ok: 'Kaydet'
+    });
+    if (v === null) return;
+    try {
+      if (!v) { localStorage.removeItem(LS_KEY); toast('API anahtarı silindi.', 'ok'); }
+      else if (/^[\w-]{20,80}$/.test(v)) { localStorage.setItem(LS_KEY, v); toast('API anahtarı kaydedildi.', 'ok'); }
+      else toast('Anahtar biçimi geçersiz görünüyor.', 'err');
+    } catch { toast('Tarayıcı depolaması kullanılamıyor.', 'err'); }
+    renderSearch();
+  }
+
+  function exportData() {
+    const blob = new Blob([JSON.stringify({ app: 'akis', v: 1, playlists: state.playlists }, null, 2)], { type: 'application/json' });
+    const a = el('a', { href: URL.createObjectURL(blob), download: 'akis-listeler.json' });
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  }
+  async function importData(file) {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast('Dosya çok büyük (en fazla 5 MB).', 'err'); return; }
+    try {
+      const d = JSON.parse(await file.text());
+      const pls = sanitizePlaylists(d && d.playlists);
+      if (!pls.length) throw new Error('boş');
+      pls.forEach(p => { p.id = uid(); state.playlists.push(p); });
+      state.activeId = pls[0].id;
+      save(); render();
+      toast(`${pls.length} liste içe aktarıldı.`, 'ok');
+    } catch { toast('Dosya okunamadı: geçerli bir Akış dışa aktarma dosyası değil.', 'err'); }
+  }
+
+  /* ——— Olaylar ——— */
+  function init() {
+    load();
+    $('#btnShuffle').append(icon('shuffle'));
+    $('#btnPrev').append(icon('prev'));
+    $('#btnNext').append(icon('next'));
+    $('#btnRepeat').append(icon('repeat'));
+    $('#btnRename').append(icon('edit'));
+    $('#btnDelPl').append(icon('trash'));
+    if (location.protocol === 'file:') $('#fileNote').hidden = false;
+
+    $('#addForm').addEventListener('submit', e => { e.preventDefault(); submit('play'); });
+    $('#btnAdd').addEventListener('click', () => submit('add'));
+    $('#btnKey').addEventListener('click', openKeyDialog);
+    $('#btnPlay').addEventListener('click', () => togglePlay());
+    $('#btnPrev').addEventListener('click', () => go(-1));
+    $('#btnNext').addEventListener('click', () => go(1));
+    $('#btnShuffle').addEventListener('click', toggleShuffle);
+    $('#btnRepeat').addEventListener('click', cycleRepeat);
+    $('#tabList').addEventListener('click', () => setTab('list'));
+    $('#tabSearch').addEventListener('click', () => setTab('search'));
+
+    $('#btnNewPl').addEventListener('click', async () => {
+      const n = await ask({ title: 'Yeni çalma listesi', input: true, placeholder: 'Liste adı', ok: 'Oluştur' });
+      if (!n) return;
+      state.activeId = newPlaylist(n).id; setTab('list'); save(); render();
+    });
+    $('#btnRename').addEventListener('click', async () => {
+      const pl = active();
+      const n = await ask({ title: 'Listeyi yeniden adlandır', input: true, value: pl.name, ok: 'Kaydet' });
+      if (!n) return;
+      pl.name = clean(n, 60) || pl.name; save(); render();
+    });
+    $('#btnDelPl').addEventListener('click', async () => {
+      if (state.playlists.length < 2) { toast('Son listeyi silemezsin. İstersen adını değiştir.', 'warn'); return; }
+      const pl = active();
+      const okay = await ask({ title: 'Listeyi sil', message: `“${pl.name}” ve içindeki ${pl.items.length} video silinecek. Bu geri alınamaz.`, ok: 'Sil', danger: true });
+      if (!okay) return;
+      const wasPlaying = state.now && state.now.plId === pl.id;
+      state.playlists = state.playlists.filter(p => p.id !== pl.id);
+      state.activeId = state.playlists[0].id;
+      if (wasPlaying) stopAll(); else { save(); render(); }
+    });
+    $('#btnExport').addEventListener('click', exportData);
+    $('#btnImport').addEventListener('click', () => $('#fileIn').click());
+    $('#fileIn').addEventListener('change', e => { importData(e.target.files[0]); e.target.value = ''; });
+
+    // Sürükle-bırak ile sıralama
+    const ul = $('#items');
+    let dragFrom = null;
+    ul.addEventListener('dragstart', e => {
+      const li = e.target.closest('li.row'); if (!li) return;
+      dragFrom = +li.dataset.i; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', '');
+      li.classList.add('drag');
+    });
+    ul.addEventListener('dragover', e => {
+      if (dragFrom == null) return;
+      e.preventDefault();
+      ul.querySelectorAll('.over').forEach(x => x.classList.remove('over'));
+      const li = e.target.closest('li.row'); if (li) li.classList.add('over');
+    });
+    ul.addEventListener('drop', e => {
+      e.preventDefault();
+      const li = e.target.closest('li.row');
+      const from = dragFrom; dragFrom = null;
+      if (li && from != null) move(from, +li.dataset.i); else render();
+    });
+    ul.addEventListener('dragend', () => { dragFrom = null; render(); });
+
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.target.closest('input,textarea,dialog,select')) return;
+      switch (e.key.toLowerCase()) {
+        case 'n': go(1); break;
+        case 'p': go(-1); break;
+        case 'k': togglePlay(); break;
+        case 's': toggleShuffle(); break;
+        case 'r': cycleRepeat(); break;
+        case '/': e.preventDefault(); $('#omni').focus(); break;
+      }
+    });
+
+    if ('mediaSession' in navigator) {
+      const set = (a, f) => { try { navigator.mediaSession.setActionHandler(a, f); } catch { /* desteklenmiyor */ } };
+      set('play', () => togglePlay(true)); set('pause', () => togglePlay(false));
+      set('previoustrack', () => go(-1)); set('nexttrack', () => go(1));
+    }
+    window.addEventListener('pagehide', flush);
+    render();
+  }
+
+  function toggleShuffle() { state.shuffle = !state.shuffle; played.clear(); if (state.now) played.add(state.now.vid); save(); renderControls(); toast('Karıştırma ' + (state.shuffle ? 'açık' : 'kapalı'), 'ok'); }
+  function cycleRepeat() { state.repeat = { off: 'all', all: 'one', one: 'off' }[state.repeat]; save(); renderControls(); toast('Tekrar: ' + { off: 'kapalı', all: 'liste', one: 'tek video' }[state.repeat], 'ok'); }
+
+  init();
+})();
+</script>
+</body>
+</html>

@@ -155,7 +155,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
 <body>
 <div class="app">
   <header class="top">
-    <h1 class="brand">Akış</h1>
+    <h1 class="brand">Web Music Player by SoftArchX</h1>
     <form class="omni" id="addForm" autocomplete="off">
       <input id="omni" type="text" inputmode="url" placeholder="YouTube bağlantısı yapıştır veya video ara  ( / )" aria-label="YouTube bağlantısı veya arama" spellcheck="false" maxlength="2000">
       <button class="btn primary" type="submit">Çal</button>
@@ -197,7 +197,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       <button class="ib" type="button" id="btnNext" aria-label="Sonraki" title="Sonraki (N)"></button>
       <button class="ib" type="button" id="btnRepeat" aria-pressed="false" data-mode="off" aria-label="Tekrar: kapalı" title="Tekrar (R)"></button>
     </div>
-    <p class="note" id="fileNote" hidden>Bu dosyayı doğrudan açtığın için YouTube “Hata 153” verebilir ve API anahtarı kısıtlamaları çalışmaz. Dosyanın klasöründe <code>python3 -m http.server 8000</code> çalıştırıp <code>http://localhost:8000/akis.html</code> adresini aç.</p>
+    <p class="note" id="fileNote" hidden>Bu dosyayı doğrudan açtığın için YouTube “Hata 153” verebilir ve API anahtarı kısıtlamaları çalışmaz. Dosyanın klasöründe <code>python3 -m http.server 8000</code> çalıştırıp <code>http://localhost:8000/Web_Music_Player_by_SoftArchX.html</code> adresini aç.</p>
   </main>
 
   <section class="queue" id="queue">
@@ -240,7 +240,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   const $ = s => document.querySelector(s);
   const ID_RE = /^[\w-]{11}$/;
   const LIST_RE = /^[\w-]{10,64}$/;
-  const LS = 'akis.v1', LS_KEY = 'akis.apikey';
+  const LS = 'Web_Music_Player_by_SoftArchX.v1', LS_KEY = 'Web_Music_Player_by_SoftArchX.apikey';
   const uid = () => Math.random().toString(36).slice(2, 10);
   const clean = (s, n) => typeof s === 'string' ? s.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, n) : '';
   const decode = s => new DOMParser().parseFromString(String(s || ''), 'text/html').documentElement.textContent || '';
@@ -702,7 +702,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     const pl = state.now && plById(state.now.plId);
     $('#nowSub').textContent = it ? [it.author, pl ? 'Liste: ' + pl.name : ''].filter(Boolean).join(' • ') : '';
     $('#empty').hidden = !!state.now;
-    document.title = it ? it.title + ' — Akış' : 'Akış';
+    document.title = it ? it.title + ' — Web Music Player by SoftArchX' : 'Web Music Player by SoftArchX';
   }
 
   function renderControls() {
@@ -801,8 +801,8 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
 
   function exportData() {
-    const blob = new Blob([JSON.stringify({ app: 'akis', v: 1, playlists: state.playlists }, null, 2)], { type: 'application/json' });
-    const a = el('a', { href: URL.createObjectURL(blob), download: 'akis-listeler.json' });
+    const blob = new Blob([JSON.stringify({ app: 'Web_Music_Player_by_SoftArchX', v: 1, playlists: state.playlists }, null, 2)], { type: 'application/json' });
+    const a = el('a', { href: URL.createObjectURL(blob), download: 'Web_Music_Player_by_SoftArchX-listeler.json' });
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 3000);
   }
@@ -817,7 +817,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       state.activeId = pls[0].id;
       save(); render();
       toast(`${pls.length} liste içe aktarıldı.`, 'ok');
-    } catch { toast('Dosya okunamadı: geçerli bir Akış dışa aktarma dosyası değil.', 'err'); }
+    } catch { toast('Dosya okunamadı: geçerli bir Web Music Player by SoftArchX dışa aktarma dosyası değil.', 'err'); }
   }
 
   /* ——— Olaylar ——— */

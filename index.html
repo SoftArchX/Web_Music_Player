@@ -3,11 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://www.youtube.com https://s.ytimg.com; style-src 'unsafe-inline'; img-src 'self' https://i.ytimg.com data:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src https://www.youtube.com https://pipedapi.kavin.rocks https://pipedapi.adminforge.de https://api.piped.private.coffee https://inv.nadeko.net https://yewtu.be https://invidious.nerdvpn.de https://api.allorigins.win https://api.codetabs.com https://corsproxy.io; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'; worker-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://www.youtube.com https://s.ytimg.com; style-src 'unsafe-inline'; img-src 'self' https://i.ytimg.com data:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self' https:; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'; worker-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" type="image/svg+xml" href="website_icon.svg">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#0f1317">
 <script>try{var t=localStorage.getItem("Web_Music_Player_by_SoftArchX.theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>Web Music Player by SoftArchX</title>
@@ -140,6 +138,37 @@ body.is-playing .row.playing .eq i:nth-child(3){animation-delay:-.6s}
 .tools input{width:120px;accent-color:var(--accent)}
 .flt{width:100%;margin:0 0 8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
 .flt::placeholder{color:var(--mute)}
+.a.why{color:var(--accent-text);opacity:.85}
+.tools .ib[aria-pressed="true"]{color:var(--accent-text);background:var(--raise)}
+.ib.flip .ic{transform:rotate(180deg)}
+.rec-ex{display:flex;align-items:center;gap:8px;margin:0 4px 8px;font-size:12.5px;color:var(--mute)}
+.rec-ex input{flex:1;min-width:0;accent-color:var(--accent)}
+.sto{display:block;width:100%;background:none;border:0;padding:4px 0;text-align:left;color:var(--mute);font-size:12px}
+.sto:hover{color:var(--text)}
+.sto-bar{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:4px}
+.sto-bar i{display:block;height:100%;width:1%;background:var(--accent)}
+.sto.warn{color:var(--danger)}
+.sto.warn .sto-bar i{background:var(--danger)}
+#qrCv{display:block;margin:0 auto 12px;max-width:100%;height:auto;image-rendering:pixelated;background:#fff;border-radius:8px}
+.qr-note{margin:0 0 12px;color:var(--mute);font-size:12.5px;line-height:1.5;white-space:pre-line}
+#dlgQR .dlg-act{flex-wrap:wrap}
+.rec-note{margin:0 4px 8px;padding:8px 10px;border-radius:10px;background:var(--raise);color:var(--mute);font-size:12.5px;line-height:1.45}
+.lang{min-width:40px;font-weight:700;letter-spacing:.04em}
+.bk{position:fixed;right:16px;bottom:16px;z-index:45;max-width:min(380px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.bk p{margin:0 0 10px;font-size:13.5px}
+.bk-act{display:flex;gap:8px}
+body.has-mini .bk{bottom:72px}
+.srcbtns{display:flex;gap:6px;flex:none}
+.svc li span{flex:1;min-width:0}
+.svc li .ib{width:24px;height:24px;flex:none}
+.svc li .ib .ic{width:14px;height:14px}
+.svc-add{display:flex;gap:6px;margin:8px 0}
+.svc-add input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.svc-add select{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px;font:inherit}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 4px 8px}
+.chip{display:inline-flex;align-items:center;background:var(--raise);border:1px solid var(--line);border-radius:999px;font-size:13px}
+.chip button{background:none;border:0;padding:4px 10px;border-radius:999px}
+.chip .x{padding:4px 9px 4px 2px;color:var(--mute)}
 .menu{position:fixed;z-index:60;min-width:230px;max-width:92vw;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 12px 32px rgba(0,0,0,.4);display:flex;flex-direction:column}
 .mi{background:none;border:0;text-align:left;padding:9px 12px;border-radius:8px}
 .mi:hover,.mi:focus-visible{background:var(--raise)}
@@ -155,7 +184,11 @@ dialog select{width:100%;background:var(--bg);color:var(--text);border:1px solid
 .mini-t b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
 .mini-t span{color:var(--mute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.has-mini .app{padding-bottom:56px}
-.svc{margin:10px 4px 0;font-size:12.5px;color:var(--mute)}
+.srcbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:0 4px 6px;font-size:13px}
+#srcText{min-width:0;overflow-wrap:anywhere}
+.svc li.idle i{background:var(--line)}
+.svc li small{color:var(--mute)}
+.svc{margin:0 4px 8px;font-size:12.5px;color:var(--mute)}
 .svc summary{cursor:pointer;padding:4px 0}
 .svc ul{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:4px}
 .svc li{display:flex;gap:8px;align-items:center}
@@ -203,11 +236,13 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   <header class="top">
     <h1 class="brand"><img src="website_icon.svg" alt="" width="32" height="32"><span>Web Music Player by SoftArchX</span></h1>
     <form class="omni" id="addForm" autocomplete="off">
-      <input id="omni" type="text" inputmode="url" placeholder="YouTube bağlantısı yapıştır veya video ara  ( / )" aria-label="YouTube bağlantısı veya arama" spellcheck="false" maxlength="2000">
+      <input id="omni" type="text" inputmode="url" list="shList" placeholder="YouTube bağlantısı yapıştır veya video ara  ( / )" aria-label="YouTube bağlantısı veya arama" spellcheck="false" maxlength="2000">
       <button class="btn primary" type="submit">Çal</button>
       <button class="btn" type="button" id="btnAdd">Listeye ekle</button>
+      <datalist id="shList"></datalist>
     </form>
     <button class="btn small" type="button" id="btnInstall" hidden>Uygulamayı yükle</button>
+    <button class="btn small lang" type="button" id="btnLang">TR</button>
     <button class="ib" type="button" id="btnTheme" aria-label="Tema" title="Tema"></button>
     <button class="ib" type="button" id="btnHelp" aria-label="Kısayollar" title="Kısayollar (?)"><b aria-hidden="true">?</b></button>
   </header>
@@ -221,6 +256,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
         <button class="btn small" type="button" id="btnExport">Dışa aktar</button>
         <button class="btn small" type="button" id="btnImport">İçe aktar</button>
       </div>
+      <button class="sto" type="button" id="btnSto" title="Depolama kullanımı"><span class="sto-bar"><i id="stoFill"></i></span><span id="stoText"></span></button>
       <p class="keys">Kısayollar: N sonraki, P önceki, K oynat/duraklat, S karıştır, R tekrar, M ses, F tam ekran, ←/→ 5 sn, / arama kutusu, ? yardım.</p>
       <input id="fileIn" type="file" accept="application/json,.json" hidden>
     </div>
@@ -254,7 +290,10 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     <div class="tools">
       <label><span>Ses</span><input id="vol" type="range" min="0" max="100" step="1" value="100" aria-label="Ses"></label>
       <button class="btn small" type="button" id="btnRate" title="Çalma hızı">Hız 1x</button>
-      <button class="btn small" type="button" id="btnSleep" aria-pressed="false" title="Uyku zamanlayıcısı">Uyku: kapalı</button>
+      <button class="btn small" type="button" id="btnSleep" aria-pressed="false" title="Uyku zamanlayıcısı" aria-haspopup="menu">Uyku: kapalı</button>
+      <button class="btn small" type="button" id="btnSmart" aria-pressed="true" title="Karıştırma açıkken aynı kanaldan art arda parça çalmaz, yakın zamanda çalınanları geriye atar">Akıllı karıştırma: açık</button>
+      <button class="ib" type="button" id="btnLike" aria-pressed="false" aria-label="Beğen" title="Beğen: bu tür parçalar daha çok önerilir"></button>
+      <button class="ib flip" type="button" id="btnDislike" aria-pressed="false" aria-label="Beğenme" title="Beğenme: bu tür parçalar önerilmez ve sıradakine geçilir"></button>
     </div>
     <p class="note" id="fileNote" hidden>Dosyayı doğrudan açarsan YouTube “Hata 153” verebilir. GitHub Pages gibi bir https adresinden aç.</p>
   </main>
@@ -264,12 +303,14 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       <button type="button" role="tab" id="tabList" aria-selected="true" aria-controls="panelList">Liste</button>
       <button type="button" role="tab" id="tabSearch" aria-selected="false" aria-controls="panelSearch">Arama</button>
       <button type="button" role="tab" id="tabQueue" aria-selected="false" aria-controls="panelQueue">Sıra</button>
+      <button type="button" role="tab" id="tabRec" aria-selected="false" aria-controls="panelRec">Öneri</button>
     </div>
     <div class="panel" id="panelList" role="tabpanel" aria-labelledby="tabList">
       <div class="pl-head">
         <h2 id="plTitle"></h2>
         <button class="ib" type="button" id="btnClean" aria-label="Oynatılamayanları kaldır" title="Oynatılamayanları kaldır"></button>
         <button class="ib" type="button" id="btnShare" aria-label="Paylaşım linki oluştur" title="Paylaşım linki oluştur"></button>
+        <button class="ib" type="button" id="btnQR" aria-label="QR kod ile paylaş" title="QR kod ile paylaş"></button>
         <button class="ib" type="button" id="btnRename" aria-label="Listeyi yeniden adlandır" title="Yeniden adlandır"></button>
         <button class="ib" type="button" id="btnDelPl" aria-label="Listeyi sil" title="Listeyi sil"></button>
       </div>
@@ -277,9 +318,31 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       <ul class="rows" id="items"></ul>
     </div>
     <div class="panel" id="panelSearch" role="tabpanel" aria-labelledby="tabSearch" hidden>
+      <div class="srcbar">
+        <span id="srcText"></span>
+        <span class="srcbtns">
+          <button class="btn small" type="button" id="btnSvcCheck" title="Her servise sabit bir deneme araması (“müzik”) gönderip hangilerinin çalıştığını ve ne kadar hızlı olduğunu gösterir">Kontrol et</button>
+          <button class="btn small" type="button" id="btnSvcEdit" aria-pressed="false" title="Servis listesini düzenle">Düzenle</button>
+        </span>
+      </div>
+      <div id="shBox" hidden>
+        <div class="srcbar"><span>Son aramalar</span><button class="btn small" type="button" id="btnShClear">Temizle</button></div>
+        <div class="chips" id="shChips"></div>
+      </div>
+      <details class="svc" id="svc" open>
+        <summary id="svcSum"></summary>
+        <ul id="svcList"></ul>
+        <div id="svcEdit" hidden>
+          <form class="svc-add" id="svcAdd" autocomplete="off">
+            <select id="svcType" aria-label="Servis türü"><option value="piped">Piped</option><option value="invidious">Invidious</option></select>
+            <input id="svcUrl" type="text" inputmode="url" placeholder="https://ornek.org" aria-label="Servis adresi" maxlength="120" spellcheck="false">
+            <button class="btn small primary" type="submit">Ekle</button>
+          </form>
+          <button class="btn small" type="button" id="btnSvcReset">Varsayılana dön</button>
+        </div>
+      </details>
       <p class="hint" id="searchStatus"></p>
       <ul class="rows" id="results"></ul>
-      <details class="svc" id="svc" hidden><summary id="svcSum"></summary><ul id="svcList"></ul></details>
     </div>
     <div class="panel" id="panelQueue" role="tabpanel" aria-labelledby="tabQueue" hidden>
       <div class="pl-head">
@@ -287,6 +350,20 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
         <button class="btn small" type="button" id="btnQClear">Temizle</button>
       </div>
       <ul class="rows" id="qItems"></ul>
+    </div>
+    <div class="panel" id="panelRec" role="tabpanel" aria-labelledby="tabRec" hidden>
+      <div class="srcbar">
+        <span id="recInfo">Sana özel öneriler</span>
+        <span class="srcbtns">
+          <button class="btn small" type="button" id="btnRecRefresh">Yenile</button>
+          <button class="btn small" type="button" id="btnRecOn" aria-pressed="true" title="Açıkken dinlediklerin bu cihazda öğrenilir; kapalıyken profil güncellenmez">Öğrenme: açık</button>
+          <button class="btn small" type="button" id="btnRecReset" title="Öğrenilen profili sil">Sıfırla</button>
+        </span>
+      </div>
+      <label class="rec-ex"><span>Keşif</span><span>Tanıdık</span><input id="recEx" type="range" min="0" max="100" step="5" value="25" aria-label="Önerilerde tanıdık ile yeni arasındaki denge"><span>Yeni</span></label>
+      <p class="rec-note">Öneriler yalnızca bu cihazda, dinlediklerinden hesaplanır. Profilin hiçbir yere gönderilmez; yalnızca aday bulmak için arama servislerine sanatçı/kelime araması yapılır, tıpkı normal arama gibi.</p>
+      <p class="hint" id="recStatus"></p>
+      <ul class="rows" id="recItems"></ul>
     </div>
   </section>
 </div>
@@ -304,6 +381,20 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
 </dialog>
 <div id="toasts" aria-live="polite"></div>
 
+<dialog id="dlgQR" aria-labelledby="qrTitle">
+  <form method="dialog">
+    <h2 id="qrTitle">QR ile paylaş</h2>
+    <p id="qrMsg"></p>
+    <canvas id="qrCv" width="300" height="300" role="img" aria-label="QR kod"></canvas>
+    <p class="qr-note" id="qrNote"></p>
+    <div class="dlg-act">
+      <button class="btn" type="button" id="qrCopy">Bağlantıyı kopyala</button>
+      <button class="btn" type="button" id="qrPng">PNG indir</button>
+      <button class="btn primary" value="close">Kapat</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog id="dlgMove" aria-labelledby="mvTitle">
   <form method="dialog">
     <h2 id="mvTitle"></h2>
@@ -319,6 +410,14 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     </div>
   </form>
 </dialog>
+
+<div class="bk" id="bkBar" role="status" hidden>
+  <p id="bkText"></p>
+  <div class="bk-act">
+    <button class="btn small primary" type="button" id="bkNow">Yedeği indir</button>
+    <button class="btn small" type="button" id="bkLater">Daha sonra</button>
+  </div>
+</div>
 
 <div class="mini" id="mini" hidden>
   <button class="mini-main" type="button" id="miniMain" aria-label="Oynatıcıya git">
@@ -373,7 +472,9 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     fs: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
     clean: '<path d="M14 4l6 6M12 6l6 6-8 8H4v-6zM9 11l4 4"/>',
     theme: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>',
-    share: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v5h14v-5"/>'
+    share: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v5h14v-5"/>',
+    qr: '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/>',
+    like: '<path d="M7 11v9H4v-9zM7 11l4-7c1.7 0 2.6 1.1 2.4 2.5L13 9h5.4a2 2 0 0 1 2 2.3l-1.1 6.4A2 2 0 0 1 17.3 20H7"/>'
   };
   function icon(name) {
     const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -437,7 +538,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   /* ——— Durum ——— */
   let state = {
     playlists: [{ id: uid(), name: 'Kitaplık', items: [] }],
-    activeId: null, shuffle: false, repeat: 'off', now: null, queue: [], vol: 100, rate: 1, pos: null, bk: 0
+    activeId: null, shuffle: false, repeat: 'off', now: null, queue: [], vol: 100, rate: 1, pos: null, bk: 0, recent: [], smart: true, chg: 0, bkSnooze: 0
   };
   let playing = false, hist = [], errStreak = 0;
   const played = new Set(), bad = new Set();
@@ -485,6 +586,10 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
         if ([0.75, 1, 1.25, 1.5, 2].includes(d.rate)) state.rate = d.rate;
         if (d.pos && typeof d.pos.vid === 'string' && ID_RE.test(d.pos.vid) && Number.isFinite(d.pos.t) && d.pos.t >= 0 && d.pos.t < 86400) state.pos = { vid: d.pos.vid, t: Math.floor(d.pos.t) };
         if (Number.isFinite(d.bk) && d.bk > 0) state.bk = d.bk;
+        if (Array.isArray(d.recent)) state.recent = d.recent.filter(x => typeof x === 'string' && ID_RE.test(x)).slice(0, 300);
+        if (d.smart === false) state.smart = false;
+        if (Number.isFinite(d.chg) && d.chg > 0) state.chg = Math.floor(d.chg);
+        if (Number.isFinite(d.bkSnooze) && d.bkSnooze > 0) state.bkSnooze = d.bkSnooze;
         if (Array.isArray(d.bad)) d.bad.slice(0, 2000).forEach(x => { if (typeof x === 'string' && ID_RE.test(x)) bad.add(x); });
         state.repeat = ['off', 'all', 'one'].includes(d.repeat) ? d.repeat : 'off';
         if (d.now && plById(d.now.plId) && plById(d.now.plId).items.some(i => i.id === d.now.vid)) state.now = { plId: d.now.plId, vid: d.now.vid };
@@ -494,7 +599,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
   let saveT = 0;
   function flush() {
-    try { localStorage.setItem(LS, JSON.stringify({ v: 1, playlists: state.playlists, activeId: state.activeId, shuffle: state.shuffle, repeat: state.repeat, now: state.now, queue: state.queue, vol: state.vol, rate: state.rate, pos: state.pos, bk: state.bk, bad: [...bad].slice(0, 2000) })); } catch { /* depolama kapalı olabilir */ }
+    try { localStorage.setItem(LS, JSON.stringify({ v: 1, playlists: state.playlists, activeId: state.activeId, shuffle: state.shuffle, repeat: state.repeat, now: state.now, queue: state.queue, vol: state.vol, rate: state.rate, pos: state.pos, bk: state.bk, recent: state.recent, smart: state.smart, chg: state.chg, bkSnooze: state.bkSnooze, bad: [...bad].slice(0, 2000) })); renderSto(); } catch (e) { if (e && e.name === 'QuotaExceededError') stoFull(); }
   }
   function save() { clearTimeout(saveT); saveT = setTimeout(flush, 150); }
 
@@ -666,34 +771,139 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
   /* Kaynak listesi, durum göstergesi ve “son çalışanı hatırla” */
   const LS_SVC = 'Web_Music_Player_by_SoftArchX.svc';
-  const SVC = [
-    ...PIPED.map(b => ({ id: 'p:' + b, kind: 'json', label: 'Piped · ' + new URL(b).host, run: q => viaPiped(b, q) })),
-    ...INVIDIOUS.map(b => ({ id: 'i:' + b, kind: 'json', label: 'Invidious · ' + new URL(b).host, run: q => viaInvidious(b, q) })),
-    ...PROXIES.map((mk, k) => ({ id: 'x:' + k, kind: 'html', label: 'YouTube sayfası · ' + ['allorigins', 'codetabs', 'corsproxy'][k], run: q => viaProxy(mk, q) }))
-  ];
-  const svcState = {};
-  let lastGood = '';
+  /* Servis listesi: Piped/Invidious adresleri eklenip silinebilir (yalnızca bu tarayıcıda saklanır).
+     Vekil (YouTube sayfası) servisleri sabittir. */
+  const LS_CFG = 'Web_Music_Player_by_SoftArchX.svccfg';
+  const cfg = { piped: PIPED.slice(), invidious: INVIDIOUS.slice() };
+  function normBase(v) {
+    try {
+      const u = new URL(String(v).trim());
+      if (u.protocol !== 'https:' || u.username || u.password || u.search || u.hash || (u.pathname !== '/' && u.pathname !== '')) return null;
+      const h = u.hostname;
+      if (!h.includes('.') || /^[\d.]+$/.test(h) || h.startsWith('[') || h === 'localhost' || h.endsWith('.local') || h.length > 100) return null;
+      return u.origin;
+    } catch { return null; }
+  }
+  try {
+    const d = JSON.parse(localStorage.getItem(LS_CFG) || 'null');
+    if (d) for (const k of ['piped', 'invidious']) if (Array.isArray(d[k])) cfg[k] = [...new Set(d[k].map(normBase).filter(Boolean))].slice(0, 12);
+  } catch { /* yoksay */ }
+  function saveCfg() { try { localStorage.setItem(LS_CFG, JSON.stringify(cfg)); } catch { /* yoksay */ } }
+
+  let SVC = [];
+  function buildSvc() {
+    SVC = [
+      ...cfg.piped.map(b => ({ id: 'p:' + b, kind: 'json', type: 'piped', base: b, label: 'Piped · ' + new URL(b).host, run: q => viaPiped(b, q) })),
+      ...cfg.invidious.map(b => ({ id: 'i:' + b, kind: 'json', type: 'invidious', base: b, label: 'Invidious · ' + new URL(b).host, run: q => viaInvidious(b, q) })),
+      ...PROXIES.map((mk, k) => ({ id: 'x:' + k, kind: 'html', label: 'YouTube sayfası · ' + ['allorigins', 'codetabs', 'corsproxy'][k], run: q => viaProxy(mk, q) }))
+    ];
+  }
+  buildSvc();
+
+  const svcState = {}, svcSeen = {}, svcMs = {};
+  let lastGood = '', svcEdit = false;
   try { lastGood = localStorage.getItem(LS_SVC) || ''; } catch { /* yoksay */ }
+  const LS_SVCST = 'Web_Music_Player_by_SoftArchX.svcstate';
+  try {
+    const d = JSON.parse(localStorage.getItem(LS_SVCST) || '{}');
+    for (const k of Object.keys(d)) {
+      const v = d[k];
+      if (Array.isArray(v) && (v[0] === 'ok' || v[0] === 'fail') && Number.isFinite(v[1])) {
+        svcState[k] = v[0]; svcSeen[k] = v[1];
+        if (Number.isFinite(v[2])) svcMs[k] = v[2];
+      }
+    }
+  } catch { /* yoksay */ }
+  function saveSvc() {
+    const o = {};
+    for (const x of SVC) if (svcSeen[x.id] && (svcState[x.id] === 'ok' || svcState[x.id] === 'fail')) o[x.id] = [svcState[x.id], svcSeen[x.id], svcMs[x.id] == null ? null : svcMs[x.id]];
+    try { localStorage.setItem(LS_SVCST, JSON.stringify(o)); } catch { /* yoksay */ }
+  }
+  // Önce denenecek servis: çalıştığı bilinenler arasında en hızlısı; yoksa son çalışan
+  function preferred() {
+    const oks = SVC.filter(x => svcState[x.id] === 'ok' && Number.isFinite(svcMs[x.id]));
+    if (oks.length) return oks.reduce((a, b) => svcMs[b.id] < svcMs[a.id] ? b : a);
+    return SVC.find(x => x.id === lastGood) || null;
+  }
 
   function renderSvc() {
-    const box = $('#svc');
-    const rows = SVC.filter(x => svcState[x.id]);
-    box.hidden = !rows.length;
-    $('#svcSum').textContent = S.src ? 'Kaynak: ' + S.src : 'Arama kaynakları';
-    const T = { pending: 'deneniyor', ok: 'çalışıyor', fail: 'yanıt vermedi' };
-    $('#svcList').replaceChildren(...rows.map(x => el('li', { class: svcState[x.id] }, el('i'), el('span', null, x.label + ' — ' + T[svcState[x.id]]))));
+    const ok = SVC.filter(x => svcState[x.id] === 'ok').length;
+    const known = SVC.filter(x => svcState[x.id] && svcState[x.id] !== 'pending').length;
+    const last = SVC.find(x => x.id === lastGood);
+    $('#srcText').textContent = S.src ? 'Kaynak: ' + S.src : (last ? 'Son çalışan kaynak: ' + last.label : 'Kaynak: henüz arama yapılmadı');
+    $('#svcSum').textContent = 'Arama servisleri' + (known ? ' — ' + ok + '/' + SVC.length + ' çalışıyor' : '');
+    const T = { idle: 'denenmedi', pending: 'deneniyor', ok: 'çalışıyor', fail: 'yanıt vermedi' };
+    const rank = x => { const t = svcState[x.id] || 'idle'; return t === 'ok' ? 0 : t === 'pending' ? 1 : t === 'idle' ? 2 : 3; };
+    const hm = t => new Date(t).toLocaleTimeString(lang === 'en' ? 'en-GB' : 'tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const pref = preferred();
+    const rows = SVC.slice().sort((a, b) => rank(a) - rank(b) || (rank(a) === 0 ? (svcMs[a.id] == null ? 1e9 : svcMs[a.id]) - (svcMs[b.id] == null ? 1e9 : svcMs[b.id]) : 0));
+    $('#svcList').replaceChildren(...rows.map(x => {
+      const st = svcState[x.id] || 'idle';
+      const txt = x.label + ' — ' + T[st] + (st === 'ok' && svcMs[x.id] != null ? ' · ' + svcMs[x.id] + ' ms' : '') + (x === pref ? ' ★' : '');
+      return el('li', { class: st },
+        el('i'),
+        el('span', null, txt, svcSeen[x.id] && st !== 'pending' ? el('small', null, ' (' + hm(svcSeen[x.id]) + ')') : null),
+        svcEdit && x.type ? ibtn('close', 'Servisi sil: ' + x.label, () => removeService(x)) : null);
+    }));
   }
   async function track(st, q) {
     svcState[st.id] = 'pending'; renderSvc();
-    try { const items = await st.run(q); svcState[st.id] = 'ok'; renderSvc(); return { items, st }; }
-    catch (e) { svcState[st.id] = 'fail'; renderSvc(); throw e; }
+    const t0 = performance.now();
+    try {
+      const items = await st.run(q);
+      svcState[st.id] = 'ok'; svcSeen[st.id] = Date.now(); svcMs[st.id] = Math.round(performance.now() - t0);
+      saveSvc(); renderSvc(); return { items, st };
+    } catch (e) {
+      svcState[st.id] = 'fail'; svcSeen[st.id] = Date.now(); delete svcMs[st.id];
+      saveSvc(); renderSvc(); throw e;
+    }
+  }
+  async function checkServices() {
+    const b = $('#btnSvcCheck');
+    b.disabled = true; b.textContent = 'Kontrol ediliyor…';
+    await Promise.allSettled(SVC.map(x => track(x, 'müzik')));
+    b.disabled = false; b.textContent = 'Kontrol et';
+    const n = SVC.filter(x => svcState[x.id] === 'ok').length;
+    toast(n ? n + '/' + SVC.length + ' arama servisi çalışıyor.' : 'Hiçbir arama servisine ulaşılamadı.', n ? 'ok' : 'warn');
+  }
+  function toggleSvcEdit() {
+    svcEdit = !svcEdit;
+    $('#svcEdit').hidden = !svcEdit;
+    $('#btnSvcEdit').setAttribute('aria-pressed', String(svcEdit));
+    $('#btnSvcEdit').textContent = svcEdit ? 'Bitti' : 'Düzenle';
+    renderSvc();
+  }
+  function addService(e) {
+    e.preventDefault();
+    const type = $('#svcType').value, base = normBase($('#svcUrl').value);
+    if (!base) { toast('Geçerli bir https adresi gir: yalnızca alan adı olmalı (örn. https://ornek.org).', 'err'); return; }
+    if (cfg.piped.includes(base) || cfg.invidious.includes(base)) { toast('Bu adres zaten listede.', 'warn'); return; }
+    if (cfg[type].length >= 12) { toast('Bu türde en fazla 12 servis olabilir.', 'warn'); return; }
+    cfg[type].push(base); saveCfg(); buildSvc();
+    $('#svcUrl').value = ''; renderSvc();
+    const st = SVC.find(x => x.type === type && x.base === base);
+    if (st) track(st, 'müzik').then(
+      () => toast('Eklendi, çalışıyor (' + svcMs[st.id] + ' ms).', 'ok'),
+      () => toast('Eklendi ama yanıt vermiyor (adres yanlış ya da servis tarayıcı isteklerine izin vermiyor olabilir).', 'warn'));
+  }
+  function removeService(x) {
+    cfg[x.type] = cfg[x.type].filter(b => b !== x.base);
+    delete svcState[x.id]; delete svcSeen[x.id]; delete svcMs[x.id];
+    if (lastGood === x.id) lastGood = '';
+    saveCfg(); buildSvc(); saveSvc(); renderSvc();
+  }
+  async function resetServices() {
+    const yes = await ask({ title: 'Varsayılana dön', message: 'Servis listesi ilk haline döndürülecek; eklediğin adresler silinir.', ok: 'Sıfırla', danger: true });
+    if (!yes) return;
+    cfg.piped = PIPED.slice(); cfg.invidious = INVIDIOUS.slice();
+    saveCfg(); buildSvc(); saveSvc(); renderSvc();
+    toast('Servis listesi varsayılana döndü.', 'ok');
   }
 
   async function searchFree(q) {
-    for (const k of Object.keys(svcState)) delete svcState[k];
     S.src = ''; renderSvc();
     let res = null;
-    const first = SVC.find(x => x.id === lastGood);
+    const first = preferred();
     if (first) {
       try { res = await Promise.race([track(first, q), new Promise((_, rej) => setTimeout(() => rej(new Error('t')), 5000))]); } catch { /* sıradakilere geç */ }
     }
@@ -713,6 +923,25 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     return items;
   }
 
+  /* Arama geçmişi (yalnızca bu tarayıcıda) */
+  const LS_SH = 'Web_Music_Player_by_SoftArchX.searches';
+  let searches = [];
+  try { const d = JSON.parse(localStorage.getItem(LS_SH) || '[]'); if (Array.isArray(d)) searches = d.map(x => clean(x, 100)).filter(Boolean).slice(0, 20); } catch { /* yoksay */ }
+  function saveSh() { try { localStorage.setItem(LS_SH, JSON.stringify(searches)); } catch { /* yoksay */ } }
+  function addSearch(q) {
+    q = clean(q, 100); if (!q) return;
+    searches = [q, ...searches.filter(x => x.toLowerCase() !== q.toLowerCase())].slice(0, 20);
+    saveSh(); renderSh();
+  }
+  function runSearch(q) { $('#omni').value = q; submit('play'); }
+  function renderSh() {
+    $('#shBox').hidden = !searches.length;
+    $('#shList').replaceChildren(...searches.map(q => el('option', { value: q })));
+    $('#shChips').replaceChildren(...searches.map(q => el('span', { class: 'chip' },
+      el('button', { type: 'button', title: 'Yeniden ara', onclick: () => runSearch(q) }, q),
+      el('button', { type: 'button', class: 'x', 'aria-label': 'Geçmişten sil: ' + q, onclick: () => { searches = searches.filter(x => x !== q); saveSh(); renderSh(); } }, '×'))));
+  }
+
   async function search(q) {
     S.q = q; S.items = []; S.status = 'loading';
     setTab('search'); renderSearch();
@@ -720,6 +949,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     try {
       S.items = await searchFree(q);
       S.status = S.items.length ? 'ok' : 'none';
+      if (S.items.length) addSearch(q);
     } catch (e) {
       S.status = 'err'; S.msg = e.name === 'AbortError' ? 'İstek zaman aşımına uğradı.' : (e.message || 'Arama başarısız.');
     }
@@ -739,7 +969,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       if (!ID_RE.test(it.id) || have.has(it.id) || pl.items.length >= 2000) continue;
       have.add(it.id); pl.items.push({ id: it.id, title: it.title, author: it.author || '' }); n++;
     }
-    if (n) { save(); render(); }
+    if (n) { bump(n); render(); }
     return n;
   }
   function move(from, to) {
@@ -780,6 +1010,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     const it = pl.items[idx]; if (!it) return;
     const wasCur = state.now && state.now.plId === pl.id && state.now.vid === it.id;
     pl.items.splice(idx, 1);
+    bump(1);
     if (wasCur) {
       const n = pl.items.length;
       if (n) playVid(pl.id, pl.items[Math.min(idx, n - 1)].id, { back: true });
@@ -830,6 +1061,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     state.now = { plId, vid };
     if (opt.ext) { state.now.q = 1; state.now.ext = opt.ext; state.now.from = opt.from || null; }
     played.add(vid);
+    state.recent = [vid, ...state.recent.filter(x => x !== vid)].slice(0, 300);
     save(); render();
     const first = !playerP;
     const resume = first && state.pos && state.pos.vid === vid ? state.pos.t : 0;
@@ -837,6 +1069,31 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     const p = await ensurePlayer(vid, resume);
     if (!p) return;
     if (!first) { try { player.loadVideoById(vid); } catch { /* yoksay */ } }
+  }
+
+  /* Akıllı karıştırma: önceki parçayla aynı kanaldan olanları eler (başka seçenek varsa), son 3 parçanın
+     kanallarını ve yakın zamanda çalınanları geriye atar (ağırlıklı rastgele seçim). */
+  function smartPick(pl, c) {
+    if (!state.smart || c.length < 2) return c[Math.floor(Math.random() * c.length)];
+    const cur = curItem(), curA = cur && cur.author ? cur.author : '';
+    let pool = c;
+    if (curA) { const diff = c.filter(k => pl.items[k].author !== curA); if (diff.length) pool = diff; }
+    const byId = new Map(pl.items.map(x => [x.id, x]));
+    const rec = state.recent;
+    const recA = new Set(rec.slice(0, 3).map(id => (byId.get(id) || {}).author).filter(Boolean));
+    const ramp = Math.min(30, Math.max(5, pl.items.length / 2));
+    const pos = new Map();
+    rec.forEach((id, r) => { if (!pos.has(id)) pos.set(id, r); });
+    const w = pool.map(k => {
+      const it = pl.items[k]; let x = 1;
+      const r = pos.get(it.id);
+      if (r !== undefined) x *= 0.1 + 0.9 * Math.min(1, r / ramp);
+      if (it.author && recA.has(it.author)) x *= 0.25;
+      return x;
+    });
+    let t = Math.random() * w.reduce((a, b) => a + b, 0);
+    for (let j = 0; j < pool.length; j++) { t -= w[j]; if (t <= 0) return pool[j]; }
+    return pool[pool.length - 1];
   }
 
   function pickNext(pl, i, auto) {
@@ -851,7 +1108,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
         c = all.filter(k => k !== i && ok(k));
         if (!c.length) return (i >= 0 && ok(i)) ? pl.items[i] : null;
       }
-      return pl.items[c[Math.floor(Math.random() * c.length)]];
+      return pl.items[smartPick(pl, c)];
     }
     for (let s = 1; s <= n; s++) {
       const k = i + s;
@@ -863,6 +1120,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
 
   function go(dir, auto) {
+    if (dir > 0 && !auto) noteSkip();
     const now = state.now;
     if (dir > 0 && auto && state.repeat === 'one' && now && !bad.has(now.vid)) {
       const p1 = plById(now.plId);
@@ -900,7 +1158,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     const PS = YT.PlayerState;
     if (e.data === PS.ENDED) {
       playing = false; state.pos = null; save();
-      if (sleepEnd) { sleepEnd = false; sleepIdx = 0; renderSleep(); renderControls(); toast('Uyku zamanlayıcısı: parça bitti, müzik durduruldu.', 'ok'); return; }
+      if (sleepEnd) { sleepEnd = false; renderSleep(); renderControls(); toast('Uyku zamanlayıcısı: parça bitti, müzik durduruldu.', 'ok'); return; }
       renderControls(); go(1, true); return;
     }
     if (e.data === PS.PLAYING) {
@@ -947,7 +1205,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
         el('span', { class: 'thw' },
           el('img', { class: 'th', src: `https://i.ytimg.com/vi/${it.id}/mqdefault.jpg`, alt: '', loading: 'lazy', decoding: 'async', width: '96', height: '54', referrerpolicy: 'no-referrer' }),
           el('span', { class: 'eq', 'aria-hidden': 'true' }, el('i'), el('i'), el('i'))),
-        el('span', { class: 'meta' }, el('span', { class: 't' }, it.title), el('span', { class: 'a' }, o.bad ? 'Oynatılamıyor' : (it.author || '')))),
+        el('span', { class: 'meta' }, el('span', { class: 't' }, it.title), el('span', { class: 'a' }, o.bad ? 'Oynatılamıyor' : (it.author || '')), o.why ? el('span', { class: 'a why' }, o.why) : null, o.how ? el('span', { class: 'a why' }, o.how) : null)),
       el('span', { class: 'row-act' }, o.acts || []));
   }
 
@@ -1019,6 +1277,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#nowSub').textContent = it ? [it.author, state.now.q ? 'Sıradan çalıyor' : (pl ? 'Liste: ' + pl.name : '')].filter(Boolean).join(' • ') : '';
     $('#empty').hidden = !!state.now;
     document.title = it ? it.title + ' — Web Music Player by SoftArchX' : 'Web Music Player by SoftArchX';
+    renderLike();
   }
 
   function renderControls() {
@@ -1054,13 +1313,14 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     })));
   }
 
-  function render() { renderSide(); renderList(); renderSearch(); renderQueue(); renderNow(); renderControls(); renderMini(); }
+  function render() { renderSide(); renderList(); renderSearch(); renderQueue(); renderNow(); renderControls(); renderMini(); renderSvc(); renderSh(); renderRec(); renderSto(); }
 
   function setTab(name) {
-    for (const [k, t, p] of [['list', '#tabList', '#panelList'], ['search', '#tabSearch', '#panelSearch'], ['queue', '#tabQueue', '#panelQueue']]) {
+    for (const [k, t, p] of [['list', '#tabList', '#panelList'], ['search', '#tabSearch', '#panelSearch'], ['queue', '#tabQueue', '#panelQueue'], ['rec', '#tabRec', '#panelRec']]) {
       $(t).setAttribute('aria-selected', String(k === name));
       $(p).hidden = k !== name;
     }
+    if (name === 'rec') recOpen();
   }
 
   /* ——— Eylemler ——— */
@@ -1174,9 +1434,54 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     fillTitles(pl);
   }
 
+  /* Ayarlar: tema, dil, ses, hız, akıllı karıştırma, uyku süresi, arama servisleri, öneri profili */
+  function getSettings() {
+    return {
+      theme: getTheme(), lang, vol: state.vol, rate: state.rate, smart: state.smart, sleepMin: customSleep(),
+      services: { piped: cfg.piped.slice(), invidious: cfg.invidious.slice() },
+      taste: { on: taste.on, a: taste.a, w: taste.w, na: taste.na, nw: taste.nw, nv: taste.nv, lk: taste.lk, ls: taste.ls, ex: taste.ex }
+    };
+  }
+  function sanitizeSettings(x) {
+    if (!x || typeof x !== 'object' || Array.isArray(x)) return null;
+    const o = {};
+    if (['auto', 'dark', 'light'].includes(x.theme)) o.theme = x.theme;
+    if (x.lang === 'tr' || x.lang === 'en') o.lang = x.lang;
+    if (Number.isFinite(x.vol)) o.vol = Math.min(100, Math.max(0, Math.round(x.vol)));
+    if (RATES.includes(x.rate)) o.rate = x.rate;
+    if (typeof x.smart === 'boolean') o.smart = x.smart;
+    if (Number.isInteger(x.sleepMin) && x.sleepMin >= 0 && x.sleepMin <= 720) o.sleepMin = x.sleepMin;
+    if (x.services && typeof x.services === 'object' && !Array.isArray(x.services)) {
+      const sv = {};
+      for (const k of ['piped', 'invidious']) if (Array.isArray(x.services[k])) sv[k] = [...new Set(x.services[k].slice(0, 40).map(normBase).filter(Boolean))].slice(0, 12);
+      if (Object.keys(sv).length) o.services = sv;
+    }
+    if (x.taste && typeof x.taste === 'object' && !Array.isArray(x.taste)) o.taste = sanitizeTaste(x.taste);
+    return Object.keys(o).length ? o : null;
+  }
+  function applySettings(o) {
+    if (o.theme) {
+      try { if (o.theme === 'auto') localStorage.removeItem(LS_THEME); else localStorage.setItem(LS_THEME, o.theme); } catch { /* yoksay */ }
+      applyTheme(o.theme);
+    }
+    if (o.vol != null) { state.vol = o.vol; $('#vol').value = String(o.vol); }
+    if (o.rate != null) state.rate = o.rate;
+    if (o.smart != null) state.smart = o.smart;
+    if (o.sleepMin != null) {
+      try { if (o.sleepMin) localStorage.setItem(LS_SLEEP, String(o.sleepMin)); else localStorage.removeItem(LS_SLEEP); } catch { /* yoksay */ }
+    }
+    if (o.services) {
+      for (const k of ['piped', 'invidious']) if (o.services[k]) cfg[k] = o.services[k];
+      saveCfg(); buildSvc(); saveSvc();
+    }
+    if (o.taste) { taste = o.taste; saveTaste(); R.items = []; R.pool = []; R.status = 'idle'; R.at = 0; }
+    save(); applyAudio(); renderRate(); renderSmart();
+    if (o.lang && o.lang !== lang) setLang(o.lang, true);
+    render();
+  }
   function exportData() {
-    state.bk = Date.now(); save();
-    const blob = new Blob([JSON.stringify({ app: 'Web_Music_Player_by_SoftArchX', v: 1, playlists: state.playlists }, null, 2)], { type: 'application/json' });
+    state.bk = Date.now(); state.chg = 0; state.bkSnooze = 0; save(); backupCheck();
+    const blob = new Blob([JSON.stringify({ app: 'Web_Music_Player_by_SoftArchX', v: 2, playlists: state.playlists, settings: getSettings() }, null, 2)], { type: 'application/json' });
     const a = el('a', { href: URL.createObjectURL(blob), download: 'Web_Music_Player_by_SoftArchX-listeler.json' });
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 3000);
@@ -1184,22 +1489,34 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   async function importData(file) {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { toast('Dosya çok büyük (en fazla 5 MB).', 'err'); return; }
+    let pls, st;
     try {
       const d = JSON.parse(await file.text());
-      const pls = sanitizePlaylists(d && d.playlists);
-      if (!pls.length) throw new Error('boş');
+      pls = sanitizePlaylists(d && d.playlists);
+      st = sanitizeSettings(d && d.settings);
+      if (!pls.length && !st) throw new Error('boş');
+    } catch { toast('Dosya okunamadı: geçerli bir Web Music Player by SoftArchX dışa aktarma dosyası değil.', 'err'); return; }
+    if (pls.length) {
       pls.forEach(p => { p.id = uid(); state.playlists.push(p); });
+      bump(pls.reduce((a, p) => a + p.items.length, 0) || 1);
       state.activeId = pls[0].id;
       save(); render();
       toast(`${pls.length} liste içe aktarıldı.`, 'ok');
-    } catch { toast('Dosya okunamadı: geçerli bir Web Music Player by SoftArchX dışa aktarma dosyası değil.', 'err'); }
+    }
+    if (st) {
+      const yes = await ask({
+        title: 'Ayarlar da uygulansın mı?',
+        message: 'Yedek dosyasında ayarlar da var (tema, dil, ses, hız, akıllı karıştırma, uyku süresi, arama servisleri, öneri profili). Bu cihazdaki ayarların üzerine yazılsın mı?',
+        ok: 'Uygula', cancel: 'Atla'
+      });
+      if (yes) { applySettings(st); toast('Ayarlar uygulandı.', 'ok'); }
+    }
   }
 
   /* ——— Ek denetimler: konum, ses, hız, uyku, tema, yardım ——— */
   const LS_THEME = 'Web_Music_Player_by_SoftArchX.theme';
   const RATES = [0.75, 1, 1.25, 1.5, 2];
-  const SLEEP = [null, 15, 30, 60, 'end'];
-  let dragging = false, lastPosSave = 0, sleepIdx = 0, sleepAt = 0, sleepEnd = false, filterQ = '';
+  let dragging = false, lastPosSave = 0, sleepAt = 0, sleepEnd = false, filterQ = '';
 
   const fmt = sec => {
     const t = Math.max(0, Math.floor(sec || 0)), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60;
@@ -1215,9 +1532,10 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
   function tick() {
     if (sleepAt && Date.now() >= sleepAt) {
-      sleepAt = 0; sleepIdx = 0; renderSleep(); togglePlay(false);
+      sleepAt = 0; renderSleep(); togglePlay(false);
       toast('Uyku zamanlayıcısı: müzik durduruldu.', 'ok');
     } else if (sleepAt) renderSleep();
+    trackListen();
     if (!player || !ready) return;
     let cur = 0, dur = 0;
     try { cur = player.getCurrentTime() || 0; dur = player.getDuration() || 0; } catch { return; }
@@ -1228,6 +1546,12 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (playing && Date.now() - lastPosSave > 4000) { lastPosSave = Date.now(); savePos(); save(); }
   }
   function seekBy(d) { try { player.seekTo(Math.max(0, player.getCurrentTime() + d), true); } catch { /* yoksay */ } }
+  function renderSmart() {
+    const b = $('#btnSmart');
+    b.textContent = 'Akıllı karıştırma: ' + (state.smart ? 'açık' : 'kapalı');
+    b.setAttribute('aria-pressed', String(state.smart));
+  }
+  function toggleSmart() { state.smart = !state.smart; save(); renderSmart(); toast('Akıllı karıştırma ' + (state.smart ? 'açık' : 'kapalı'), 'ok'); }
   function renderRate() { $('#btnRate').textContent = 'Hız ' + state.rate + 'x'; }
   function cycleRate() {
     state.rate = RATES[(RATES.indexOf(state.rate) + 1) % RATES.length];
@@ -1239,14 +1563,36 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (sleepEnd) t = 'Uyku: parça sonu';
     else if (sleepAt) t = 'Uyku: ' + fmt((sleepAt - Date.now()) / 1000 + 0.999);
     $('#btnSleep').textContent = t;
-    $('#btnSleep').setAttribute('aria-pressed', String(sleepIdx > 0));
+    $('#btnSleep').setAttribute('aria-pressed', String(!!(sleepEnd || sleepAt)));
   }
-  function cycleSleep() {
-    sleepIdx = (sleepIdx + 1) % SLEEP.length;
-    const v = SLEEP[sleepIdx];
-    sleepAt = typeof v === 'number' ? Date.now() + v * 60000 : 0;
-    sleepEnd = v === 'end';
+  const LS_SLEEP = 'Web_Music_Player_by_SoftArchX.sleepmin';
+  function customSleep() { try { const n = +localStorage.getItem(LS_SLEEP); return Number.isInteger(n) && n >= 1 && n <= 720 ? n : 0; } catch { return 0; } }
+  const fmtMin = n => n >= 60 ? Math.floor(n / 60) + ' sa' + (n % 60 ? ' ' + (n % 60) + ' dk' : '') : n + ' dk';
+  function setSleep(min) {
+    sleepEnd = false; sleepAt = min ? Date.now() + min * 60000 : 0;
     renderSleep();
+    toast(min ? 'Uyku zamanlayıcısı: ' + fmtMin(min) + ' sonra durdurulacak.' : 'Uyku zamanlayıcısı kapatıldı.', 'ok');
+  }
+  function setSleepEnd() { sleepAt = 0; sleepEnd = true; renderSleep(); toast('Uyku zamanlayıcısı: parça bitince durdurulacak.', 'ok'); }
+  function extendSleep(min) { sleepAt = Math.max(sleepAt, Date.now()) + min * 60000; renderSleep(); toast(min + ' dk eklendi.', 'ok'); }
+  async function askSleep() {
+    const c = customSleep();
+    const v = await ask({ title: 'Özel uyku süresi', message: 'Kaç dakika sonra müzik durdurulsun? (1 ile 720 arası, örn. 45)', input: true, placeholder: '45', value: c ? String(c) : '', ok: 'Başlat' });
+    if (v === null) return;
+    const m = /^\s*(\d{1,3})\s*(dk|dakika|m|min)?\s*$/i.exec(v), n = m ? +m[1] : 0;
+    if (!n || n > 720) { toast('1 ile 720 arasında bir dakika değeri gir.', 'err'); return; }
+    try { localStorage.setItem(LS_SLEEP, String(n)); } catch { /* yoksay */ }
+    setSleep(n);
+  }
+  function openSleepMenu(btn) {
+    const e = [];
+    if (sleepAt || sleepEnd) { e.push(['Zamanlayıcıyı kapat', () => setSleep(0)]); if (sleepAt) e.push(['+10 dakika ekle', () => extendSleep(10)]); }
+    for (const m of [15, 30, 60]) e.push([m + ' dakika', () => setSleep(m)]);
+    const c = customSleep();
+    if (c && ![15, 30, 60].includes(c)) e.push([fmtMin(c) + ' (son girilen)', () => setSleep(c)]);
+    e.push(['Parça sonu', setSleepEnd]);
+    e.push(['Özel süre…', askSleep]);
+    openMenu(btn, e);
   }
   const THEMES = { auto: 'otomatik', dark: 'koyu', light: 'açık' };
   function getTheme() { try { const t = localStorage.getItem(LS_THEME); return t === 'dark' || t === 'light' ? t : 'auto'; } catch { return 'auto'; } }
@@ -1275,12 +1621,24 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     const n = state.now;
     pl.items = pl.items.filter(i => !bad.has(i.id));
     dead.forEach(i => bad.delete(i.id));
+    bump(dead.length);
     if (n && !n.q && n.plId === pl.id && dead.some(i => i.id === n.vid)) stopAll(); else { save(); render(); }
     toast(dead.length + ' video kaldırıldı.', 'ok');
   }
+  /* Yedek önerisi: son yedekten bu yana 25 değişiklik olduysa ya da 7 gün geçtiyse kalıcı bir kutu çıkar.
+     Tarayıcılar sayfa kapanırken kendiliğinden dosya indirmeye izin vermez; bu yüzden öneri açıkken tek tıkla indirilir. */
+  const BK_CHG = 25, BK_DAYS = 7;
+  function bump(n) { state.chg = (state.chg || 0) + n; save(); backupCheck(); }
   function backupCheck() {
+    const bar = $('#bkBar');
     const total = state.playlists.reduce((a, p) => a + p.items.length, 0);
-    if (total && Date.now() - state.bk > 7 * 864e5) toast('Listelerini 7 günden uzun süredir yedeklemedin. Soldaki “Dışa aktar” ile bir JSON dosyası kaydet.', 'warn', 9000);
+    const days = (Date.now() - state.bk) / 864e5;
+    const why = [];
+    if (state.chg >= BK_CHG) why.push(state.chg + ' değişiklik yapıldı');
+    if (days >= BK_DAYS) why.push(Math.floor(days) + ' gündür yedek alınmadı');
+    if (!total || !why.length || Date.now() < (state.bkSnooze || 0)) { bar.hidden = true; return; }
+    $('#bkText').textContent = 'Yedek önerisi: ' + why.join(', ') + '. Listelerin ve ayarların yalnızca bu tarayıcıda duruyor; tek tıkla bir JSON yedeği indirebilirsin.';
+    bar.hidden = false;
   }
 
   /* ——— Satır menüsü, taşıma/kopyalama, tam ekran, mini çubuk, kurulum ——— */
@@ -1353,7 +1711,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (!had) addItems(tgt, [it]);
     if (r.mode === 'move') {
       const j = src.items.findIndex(x => x.id === it.id);
-      if (j >= 0) src.items.splice(j, 1);
+      if (j >= 0) { src.items.splice(j, 1); bump(1); }
       if (state.now && !state.now.q && state.now.plId === src.id && state.now.vid === it.id) state.now.plId = tgt.id;
     }
     save(); render();
@@ -1377,7 +1735,18 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (miniVid !== it.id) { miniVid = it.id; $('#miniImg').src = `https://i.ytimg.com/vi/${it.id}/default.jpg`; }
   }
 
-  function setupPwa() {
+  /* Yardımcı dosyalar (manifest, sw.js, simgeler) isteğe bağlıdır: yoksa site yine eksiksiz çalışır. */
+  async function exists(url) {
+    try { return (await fetch(url, { method: 'HEAD', cache: 'no-store', credentials: 'omit' })).ok; } catch { return false; }
+  }
+  const FALLBACK_ICON = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#161c22"/><ellipse cx="25" cy="44" rx="8.5" ry="6.5" transform="rotate(-18 25 44)" fill="#f0b43c"/><rect x="31" y="15" width="4.5" height="29" rx="2" fill="#f0b43c"/><path d="M35.5 15C45 17 50 22 49 31 46 25 42 24 35.5 24Z" fill="#f0b43c"/></svg>');
+  function ensureIcon() {
+    const img = document.querySelector('.brand img'), fav = document.querySelector('link[rel="icon"]');
+    const useInline = () => { img.src = FALLBACK_ICON; if (fav) fav.href = FALLBACK_ICON; };
+    img.addEventListener('error', useInline, { once: true });
+    if (img.complete && img.naturalWidth === 0) useInline();
+  }
+  async function setupPwa() {
     window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEv = e; $('#btnInstall').hidden = false; });
     window.addEventListener('appinstalled', () => { installEv = null; $('#btnInstall').hidden = true; toast('Uygulama yüklendi.', 'ok'); });
     $('#btnInstall').addEventListener('click', async () => {
@@ -1385,7 +1754,1767 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       const ev = installEv; installEv = null; $('#btnInstall').hidden = true;
       try { await ev.prompt(); await ev.userChoice; } catch { /* yoksay */ }
     });
-    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => { /* yoksay */ });
+    if (!location.protocol.startsWith('http')) return;
+    try {
+      if (await exists('manifest.webmanifest')) {
+        document.head.append(el('link', { rel: 'manifest', href: 'manifest.webmanifest' }));
+        if (await exists('icon-192.png')) document.head.append(el('link', { rel: 'apple-touch-icon', href: 'icon-192.png' }));
+      }
+      if ('serviceWorker' in navigator && await exists('sw.js')) await navigator.serviceWorker.register('sw.js');
+    } catch { /* PWA olmadan da çalışır */ }
+  }
+
+  /* ——— Dil (Türkçe / English) ———
+     Kaynak metinler Türkçe kalır. İngilizce seçilince ekrana yazılan metinler (metin düğümleri ile title,
+     aria-label, placeholder özellikleri) sözlükten çevrilir; Türkçeye dönünce asıllarına geri yazılır.
+     Seçim yalnızca bu tarayıcıda saklanır. */
+  const LS_LANG = 'Web_Music_Player_by_SoftArchX.lang';
+  let lang = 'tr';
+  try { lang = localStorage.getItem(LS_LANG) === 'en' ? 'en' : 'tr'; } catch { /* yoksay */ }
+  const DICT = [
+ [
+  "YouTube bağlantısı yapıştır veya video ara  ( / )",
+  "Paste a YouTube link or search for a video  ( / )"
+ ],
+ [
+  "YouTube bağlantısı veya arama",
+  "YouTube link or search"
+ ],
+ [
+  "Çal",
+  "Play"
+ ],
+ [
+  "Listeye ekle",
+  "Add to list"
+ ],
+ [
+  "Uygulamayı yükle",
+  "Install app"
+ ],
+ [
+  "Tema",
+  "Theme"
+ ],
+ [
+  "Kısayollar",
+  "Shortcuts"
+ ],
+ [
+  "Kısayollar (?)",
+  "Shortcuts (?)"
+ ],
+ [
+  "Çalma listeleri",
+  "Playlists"
+ ],
+ [
+  "Yeni liste",
+  "New list"
+ ],
+ [
+  "Dışa aktar",
+  "Export"
+ ],
+ [
+  "İçe aktar",
+  "Import"
+ ],
+ [
+  "Kısayollar: N sonraki, P önceki, K oynat/duraklat, S karıştır, R tekrar, M ses, F tam ekran, ←/→ 5 sn, / arama kutusu, ? yardım.",
+  "Shortcuts: N next, P previous, K play/pause, S shuffle, R repeat, M mute, F fullscreen, ←/→ 5 s, / search box, ? help."
+ ],
+ [
+  "Kitaplık",
+  "Library"
+ ],
+ [
+  "Adsız liste",
+  "Untitled list"
+ ],
+ [
+  "İçe aktarılan liste",
+  "Imported list"
+ ],
+ [
+  "Paylaşılan liste",
+  "Shared list"
+ ],
+ [
+  "Henüz bir şey çalmıyor",
+  "Nothing is playing yet"
+ ],
+ [
+  "Üstteki kutuya bir YouTube bağlantısı yapıştır veya bir şey ara, Enter’a bas.",
+  "Paste a YouTube link into the box above or search for something, then press Enter."
+ ],
+ [
+  "Hiçbir şey çalmıyor",
+  "Nothing playing"
+ ],
+ [
+  "Oynatma denetimleri",
+  "Playback controls"
+ ],
+ [
+  "Karıştır",
+  "Shuffle"
+ ],
+ [
+  "Karıştır (S)",
+  "Shuffle (S)"
+ ],
+ [
+  "Önceki",
+  "Previous"
+ ],
+ [
+  "Önceki (P)",
+  "Previous (P)"
+ ],
+ [
+  "Oynat",
+  "Play"
+ ],
+ [
+  "Oynat / duraklat (K)",
+  "Play / pause (K)"
+ ],
+ [
+  "Duraklat",
+  "Pause"
+ ],
+ [
+  "Sonraki",
+  "Next"
+ ],
+ [
+  "Sonraki (N)",
+  "Next (N)"
+ ],
+ [
+  "Tekrar (R)",
+  "Repeat (R)"
+ ],
+ [
+  "Tekrar: kapalı",
+  "Repeat: off"
+ ],
+ [
+  "Tekrar: liste",
+  "Repeat: list"
+ ],
+ [
+  "Tekrar: tek video",
+  "Repeat: one video"
+ ],
+ [
+  "Tam ekran",
+  "Fullscreen"
+ ],
+ [
+  "Tam ekran (F)",
+  "Fullscreen (F)"
+ ],
+ [
+  "Konum",
+  "Position"
+ ],
+ [
+  "Ses",
+  "Volume"
+ ],
+ [
+  "Hız {x}x",
+  "Speed {x}x"
+ ],
+ [
+  "Çalma hızı",
+  "Playback speed"
+ ],
+ [
+  "Uyku zamanlayıcısı",
+  "Sleep timer"
+ ],
+ [
+  "Akıllı karıştırma: açık",
+  "Smart shuffle: on"
+ ],
+ [
+  "Akıllı karıştırma: kapalı",
+  "Smart shuffle: off"
+ ],
+ [
+  "Akıllı karıştırma açık",
+  "Smart shuffle on"
+ ],
+ [
+  "Akıllı karıştırma kapalı",
+  "Smart shuffle off"
+ ],
+ [
+  "Karıştırma açık",
+  "Shuffle on"
+ ],
+ [
+  "Karıştırma kapalı",
+  "Shuffle off"
+ ],
+ [
+  "Karıştırma açıkken aynı kanaldan art arda parça çalmaz, yakın zamanda çalınanları geriye atar",
+  "With shuffle on, it never plays two tracks from the same channel in a row and pushes recently played ones back"
+ ],
+ [
+  "Dosyayı doğrudan açarsan YouTube “Hata 153” verebilir. GitHub Pages gibi bir https adresinden aç.",
+  "If you open the file directly, YouTube may show “Error 153”. Open it from an https address such as GitHub Pages."
+ ],
+ [
+  "Oynatıcıya git",
+  "Go to player"
+ ],
+ [
+  "Uyku: kapalı",
+  "Sleep: off"
+ ],
+ [
+  "Uyku: parça sonu",
+  "Sleep: end of track"
+ ],
+ [
+  "Uyku: {t}",
+  "Sleep: {t}"
+ ],
+ [
+  "Tema: otomatik",
+  "Theme: auto"
+ ],
+ [
+  "Tema: koyu",
+  "Theme: dark"
+ ],
+ [
+  "Tema: açık",
+  "Theme: light"
+ ],
+ [
+  "Liste",
+  "List"
+ ],
+ [
+  "Arama",
+  "Search"
+ ],
+ [
+  "Sıra",
+  "Queue"
+ ],
+ [
+  "Sıra ({n})",
+  "Queue ({n})"
+ ],
+ [
+  "Öneri",
+  "For you"
+ ],
+ [
+  "Oynatılamayanları kaldır",
+  "Remove unplayable"
+ ],
+ [
+  "Paylaşım linki oluştur",
+  "Create share link"
+ ],
+ [
+  "Yeniden adlandır",
+  "Rename"
+ ],
+ [
+  "Listeyi yeniden adlandır",
+  "Rename list"
+ ],
+ [
+  "Listeyi sil",
+  "Delete list"
+ ],
+ [
+  "Listede ara…",
+  "Search in list…"
+ ],
+ [
+  "Listede ara",
+  "Search in list"
+ ],
+ [
+  "Bu liste boş. Bir YouTube bağlantısı yapıştır, “Listeye ekle”ye bas.",
+  "This list is empty. Paste a YouTube link and press “Add to list”."
+ ],
+ [
+  "“{q}” ile eşleşen video yok.",
+  "No videos match “{q}”."
+ ],
+ [
+  "Diğer işlemler",
+  "More actions"
+ ],
+ [
+  "Yukarı taşı",
+  "Move up"
+ ],
+ [
+  "Aşağı taşı",
+  "Move down"
+ ],
+ [
+  "Listeden çıkar",
+  "Remove from list"
+ ],
+ [
+  "Oynatılamıyor",
+  "Unplayable"
+ ],
+ [
+  "Bu listeden çalıyor",
+  "Playing from this list"
+ ],
+ [
+  "Sıradan çalıyor",
+  "Playing from queue"
+ ],
+ [
+  "Liste: {n}",
+  "List: {n}"
+ ],
+ [
+  "Çal: {t}",
+  "Play: {t}"
+ ],
+ [
+  "Sıradakiler",
+  "Up next"
+ ],
+ [
+  "Temizle",
+  "Clear"
+ ],
+ [
+  "Sıradan çıkar",
+  "Remove from queue"
+ ],
+ [
+  "Sıra boş. Bir videonun yanındaki “Sıraya ekle” düğmesine bas; İleri’ye basınca ya da video bitince önce sıradakiler çalar, sonra listene dönülür.",
+  "The queue is empty. Press “Add to queue” next to a video; when you press Next or a video ends, queued items play first, then it returns to your list."
+ ],
+ [
+  "Sıraya ekle",
+  "Add to queue"
+ ],
+ [
+  "Listede",
+  "In list"
+ ],
+ [
+  "Sıra dolu (en fazla 200).",
+  "Queue is full (max 200)."
+ ],
+ [
+  "Sıranın başına eklendi: {t}",
+  "Added to the front of the queue: {t}"
+ ],
+ [
+  "Sıraya eklendi: {t}",
+  "Added to the queue: {t}"
+ ],
+ [
+  "Eklendi: {t}",
+  "Added: {t}"
+ ],
+ [
+  "Kaldığın yerden devam ediliyor ({t}).",
+  "Resuming where you left off ({t})."
+ ],
+ [
+  "Üstteki kutuya bir şey yazıp Enter’a bas.",
+  "Type something in the box above and press Enter."
+ ],
+ [
+  "Aranıyor…",
+  "Searching…"
+ ],
+ [
+  "“{q}” için sonuç bulunamadı.",
+  "No results found for “{q}”."
+ ],
+ [
+  "Kaynak: henüz arama yapılmadı",
+  "Source: no search yet"
+ ],
+ [
+  "Kaynak: {s}",
+  "Source: {s}"
+ ],
+ [
+  "Son çalışan kaynak: {s}",
+  "Last working source: {s}"
+ ],
+ [
+  "YouTube sayfası · {p}",
+  "YouTube page · {p}"
+ ],
+ [
+  "Arama servisleri",
+  "Search services"
+ ],
+ [
+  "Arama servisleri — {a}/{b} çalışıyor",
+  "Search services — {a}/{b} working"
+ ],
+ [
+  "Kontrol et",
+  "Check"
+ ],
+ [
+  "Kontrol ediliyor…",
+  "Checking…"
+ ],
+ [
+  "Her servise sabit bir deneme araması (“müzik”) gönderip hangilerinin çalıştığını ve ne kadar hızlı olduğunu gösterir",
+  "Sends a fixed test search (“müzik”) to every service and shows which ones work and how fast they are"
+ ],
+ [
+  "Düzenle",
+  "Edit"
+ ],
+ [
+  "Bitti",
+  "Done"
+ ],
+ [
+  "Servis listesini düzenle",
+  "Edit service list"
+ ],
+ [
+  "Son aramalar",
+  "Recent searches"
+ ],
+ [
+  "Yeniden ara",
+  "Search again"
+ ],
+ [
+  "Geçmişten sil: {q}",
+  "Remove from history: {q}"
+ ],
+ [
+  "Servis türü",
+  "Service type"
+ ],
+ [
+  "Servis adresi",
+  "Service address"
+ ],
+ [
+  "https://ornek.org",
+  "https://example.org"
+ ],
+ [
+  "Ekle",
+  "Add"
+ ],
+ [
+  "Varsayılana dön",
+  "Reset to default"
+ ],
+ [
+  "Servisi sil: {l}",
+  "Remove service: {l}"
+ ],
+ [
+  "{n}/{m} arama servisi çalışıyor.",
+  "{n}/{m} search services working."
+ ],
+ [
+  "Hiçbir arama servisine ulaşılamadı.",
+  "No search service could be reached."
+ ],
+ [
+  "Geçerli bir https adresi gir: yalnızca alan adı olmalı (örn. https://ornek.org).",
+  "Enter a valid https address: it must be the domain only (e.g. https://example.org)."
+ ],
+ [
+  "Bu adres zaten listede.",
+  "This address is already in the list."
+ ],
+ [
+  "Bu türde en fazla 12 servis olabilir.",
+  "There can be at most 12 services of this type."
+ ],
+ [
+  "Eklendi, çalışıyor ({n} ms).",
+  "Added, working ({n} ms)."
+ ],
+ [
+  "Eklendi ama yanıt vermiyor (adres yanlış ya da servis tarayıcı isteklerine izin vermiyor olabilir).",
+  "Added, but it does not respond (the address may be wrong or the service may not allow browser requests)."
+ ],
+ [
+  "Servis listesi ilk haline döndürülecek; eklediğin adresler silinir.",
+  "The service list will be restored to its original state; addresses you added will be deleted."
+ ],
+ [
+  "Servis listesi varsayılana döndü.",
+  "Service list restored to default."
+ ],
+ [
+  "Arama servislerine ulaşılamadı (ücretsiz servisler bazen kapalı olur). Biraz sonra yeniden dene ya da YouTube bağlantısı yapıştır.",
+  "Could not reach the search services (free services are sometimes down). Try again in a moment or paste a YouTube link."
+ ],
+ [
+  "İstek zaman aşımına uğradı.",
+  "The request timed out."
+ ],
+ [
+  "Arama başarısız.",
+  "Search failed."
+ ],
+ [
+  "YouTube oynatıcısı yüklenemedi.",
+  "Could not load the YouTube player."
+ ],
+ [
+  "YouTube oynatıcısı yüklenemedi. İnternet bağlantını kontrol et.",
+  "Could not load the YouTube player. Check your internet connection."
+ ],
+ [
+  "Liste açılamadı (özel, Mix ya da zaman aşımı).",
+  "Could not open the list (private, Mix or timed out)."
+ ],
+ [
+  "Liste açılamadı (özel ya da desteklenmiyor).",
+  "Could not open the list (private or unsupported)."
+ ],
+ [
+  "Listedeki videolar oynatılamıyor.",
+  "The videos in the list cannot be played."
+ ],
+ [
+  "Bu video oynatılamıyor (silinmiş, özel ya da gömülmesi kapalı). Sıradakine geçiliyor.",
+  "This video cannot be played (deleted, private or embedding disabled). Skipping to the next."
+ ],
+ [
+  "Oynatma listesi bulundu",
+  "Playlist found"
+ ],
+ [
+  "Bu bağlantıda bir oynatma listesi de var. Listeyi yeni bir liste olarak ekleyeyim mi? İstersen ad ver, boş bırakırsan otomatik adlandırılır.",
+  "This link also contains a playlist. Shall I add it as a new list? You can give it a name; if you leave it empty it is named automatically."
+ ],
+ [
+  "Bu bağlantı bir oynatma listesi. Yeni bir liste olarak ekleyeyim mi? İstersen ad ver, boş bırakırsan otomatik adlandırılır.",
+  "This link is a playlist. Shall I add it as a new list? You can give it a name; if you leave it empty it is named automatically."
+ ],
+ [
+  "Liste adı (isteğe bağlı)",
+  "List name (optional)"
+ ],
+ [
+  "Evet, ekle",
+  "Yes, add"
+ ],
+ [
+  "Hayır",
+  "No"
+ ],
+ [
+  "Liste boş ya da erişilemiyor.",
+  "The list is empty or unreachable."
+ ],
+ [
+  "“{n}” içe aktarıldı ({k} video).",
+  "“{n}” imported ({k} videos)."
+ ],
+ [
+  "Liste isteği zaman aşımına uğradı.",
+  "The list request timed out."
+ ],
+ [
+  "Liste içe aktarılamadı.",
+  "Could not import the list."
+ ],
+ [
+  "Video bulunamadı ya da gömülmesi kapalı: {id}",
+  "Video not found or embedding is disabled: {id}"
+ ],
+ [
+  "Bir şeyler ters gitti.",
+  "Something went wrong."
+ ],
+ [
+  "{n} video listeye eklendi.",
+  "{n} videos added to the list."
+ ],
+ [
+  "Liste boş, paylaşacak bir şey yok.",
+  "The list is empty; nothing to share."
+ ],
+ [
+  "Paylaşım linki kopyalandı: {n} video.",
+  "Share link copied: {n} videos."
+ ],
+ [
+  "Paylaşım linki kopyalandı: {n} video (ilk {m} video).",
+  "Share link copied: {n} videos (first {m} videos)."
+ ],
+ [
+  "Paylaşım linki",
+  "Share link"
+ ],
+ [
+  "Linki kopyalayıp gönder:",
+  "Copy the link and send it:"
+ ],
+ [
+  "Linki kopyalayıp gönder (ilk {m} video):",
+  "Copy the link and send it (first {m} videos):"
+ ],
+ [
+  "“{n}” listesinde {k} video var. Yeni bir liste olarak eklensin mi?",
+  "“{n}” has {k} videos. Add it as a new list?"
+ ],
+ [
+  "“{n}” eklendi ({k} video).",
+  "“{n}” added ({k} videos)."
+ ],
+ [
+  "Dosya çok büyük (en fazla 5 MB).",
+  "File is too large (max 5 MB)."
+ ],
+ [
+  "{n} liste içe aktarıldı.",
+  "{n} lists imported."
+ ],
+ [
+  "Dosya okunamadı: geçerli bir Web Music Player by SoftArchX dışa aktarma dosyası değil.",
+  "Could not read the file: it is not a valid Web Music Player by SoftArchX export file."
+ ],
+ [
+  "Ayarlar da uygulansın mı?",
+  "Apply the settings too?"
+ ],
+ [
+  "Yedek dosyasında ayarlar da var (tema, dil, ses, hız, akıllı karıştırma, uyku süresi, arama servisleri, öneri profili). Bu cihazdaki ayarların üzerine yazılsın mı?",
+  "The backup file also contains settings (theme, language, volume, speed, smart shuffle, sleep time, search services, recommendation profile). Overwrite the settings on this device?"
+ ],
+ [
+  "Uygula",
+  "Apply"
+ ],
+ [
+  "Atla",
+  "Skip"
+ ],
+ [
+  "Ayarlar uygulandı.",
+  "Settings applied."
+ ],
+ [
+  "Uyku zamanlayıcısı: parça bitti, müzik durduruldu.",
+  "Sleep timer: track ended, music stopped."
+ ],
+ [
+  "Uyku zamanlayıcısı: müzik durduruldu.",
+  "Sleep timer: music stopped."
+ ],
+ [
+  "Uyku zamanlayıcısı kapatıldı.",
+  "Sleep timer turned off."
+ ],
+ [
+  "Uyku zamanlayıcısı: parça bitince durdurulacak.",
+  "Sleep timer: will stop when the track ends."
+ ],
+ [
+  "Uyku zamanlayıcısı: {x} sonra durdurulacak.",
+  "Sleep timer: will stop after {x}."
+ ],
+ [
+  "{n} dk eklendi.",
+  "{n} min added."
+ ],
+ [
+  "Özel uyku süresi",
+  "Custom sleep time"
+ ],
+ [
+  "Kaç dakika sonra müzik durdurulsun? (1 ile 720 arası, örn. 45)",
+  "After how many minutes should the music stop? (1 to 720, e.g. 45)"
+ ],
+ [
+  "Başlat",
+  "Start"
+ ],
+ [
+  "1 ile 720 arasında bir dakika değeri gir.",
+  "Enter a number of minutes between 1 and 720."
+ ],
+ [
+  "Zamanlayıcıyı kapat",
+  "Turn off timer"
+ ],
+ [
+  "+10 dakika ekle",
+  "+10 minutes"
+ ],
+ [
+  "{n} dakika",
+  "{n} minutes"
+ ],
+ [
+  "{x} (son girilen)",
+  "{x} (last entered)"
+ ],
+ [
+  "{n} dk",
+  "{n} min"
+ ],
+ [
+  "{n} sa",
+  "{n} h"
+ ],
+ [
+  "{n} sa {m} dk",
+  "{n} h {m} min"
+ ],
+ [
+  "Parça sonu",
+  "End of track"
+ ],
+ [
+  "Özel süre…",
+  "Custom time…"
+ ],
+ [
+  "Klavye kısayolları",
+  "Keyboard shortcuts"
+ ],
+ [
+  "N: sonraki",
+  "N: next"
+ ],
+ [
+  "P: önceki",
+  "P: previous"
+ ],
+ [
+  "K: oynat / duraklat",
+  "K: play / pause"
+ ],
+ [
+  "S: karıştır",
+  "S: shuffle"
+ ],
+ [
+  "R: tekrar",
+  "R: repeat"
+ ],
+ [
+  "M: sesi kapat / aç",
+  "M: mute / unmute"
+ ],
+ [
+  "F: tam ekran",
+  "F: fullscreen"
+ ],
+ [
+  "← →: 5 sn geri / ileri",
+  "← →: 5 s back / forward"
+ ],
+ [
+  "/: arama kutusu",
+  "/: search box"
+ ],
+ [
+  "?: bu pencere",
+  "?: this window"
+ ],
+ [
+  "Oynatılamıyor diye işaretlenmiş video yok.",
+  "No videos are marked as unplayable."
+ ],
+ [
+  "{n} video listeden çıkarılacak (silinmiş, özel ya da gömülmesi kapalı olanlar).",
+  "{n} videos will be removed from the list (deleted, private or embedding disabled)."
+ ],
+ [
+  "Kaldır",
+  "Remove"
+ ],
+ [
+  "{n} video kaldırıldı.",
+  "{n} videos removed."
+ ],
+ [
+  "{n} değişiklik yapıldı",
+  "{n} changes made"
+ ],
+ [
+  "{n} gündür yedek alınmadı",
+  "no backup for {n} days"
+ ],
+ [
+  "Yedek önerisi: {x}. Listelerin ve ayarların yalnızca bu tarayıcıda duruyor; tek tıkla bir JSON yedeği indirebilirsin.",
+  "Backup suggestion: {x}. Your lists and settings live only in this browser; you can download a JSON backup with one click."
+ ],
+ [
+  "Yedeği indir",
+  "Download backup"
+ ],
+ [
+  "Daha sonra",
+  "Later"
+ ],
+ [
+  "Yedek dosyası indirildi.",
+  "Backup file downloaded."
+ ],
+ [
+  "Bağlantı kopyalandı.",
+  "Link copied."
+ ],
+ [
+  "Bağlantı",
+  "Link"
+ ],
+ [
+  "Kopyalayıp kullan:",
+  "Copy and use:"
+ ],
+ [
+  "Sıradaki yap (sonra çal)",
+  "Play next"
+ ],
+ [
+  "Başka listeye kopyala / taşı…",
+  "Copy / move to another list…"
+ ],
+ [
+  "Bağlantıyı kopyala",
+  "Copy link"
+ ],
+ [
+  "YouTube’da aç",
+  "Open on YouTube"
+ ],
+ [
+  "Başka listeye ekle",
+  "Add to another list"
+ ],
+ [
+  "+ Yeni liste…",
+  "+ New list…"
+ ],
+ [
+  "Hedef liste",
+  "Target list"
+ ],
+ [
+  "Kopyala",
+  "Copy"
+ ],
+ [
+  "Taşı",
+  "Move"
+ ],
+ [
+  "Taşındı: “{n}”",
+  "Moved: “{n}”"
+ ],
+ [
+  "Kopyalandı: “{n}”",
+  "Copied: “{n}”"
+ ],
+ [
+  "Taşındı: “{n}” (listede zaten vardı)",
+  "Moved: “{n}” (it was already in the list)"
+ ],
+ [
+  "Kopyalandı: “{n}” (listede zaten vardı)",
+  "Copied: “{n}” (it was already in the list)"
+ ],
+ [
+  "Yeni çalma listesi",
+  "New playlist"
+ ],
+ [
+  "Liste adı",
+  "List name"
+ ],
+ [
+  "Oluştur",
+  "Create"
+ ],
+ [
+  "Kaydet",
+  "Save"
+ ],
+ [
+  "Sil",
+  "Delete"
+ ],
+ [
+  "Sıfırla",
+  "Reset"
+ ],
+ [
+  "Tamam",
+  "OK"
+ ],
+ [
+  "Vazgeç",
+  "Cancel"
+ ],
+ [
+  "Kapat",
+  "Close"
+ ],
+ [
+  "Son listeyi silemezsin. İstersen adını değiştir.",
+  "You can’t delete the last list. You can rename it instead."
+ ],
+ [
+  "“{n}” ve içindeki {k} video silinecek. Bu geri alınamaz.",
+  "“{n}” and its {k} videos will be deleted. This cannot be undone."
+ ],
+ [
+  "Tam ekran açılamadı.",
+  "Could not enter fullscreen."
+ ],
+ [
+  "Bu tarayıcı tam ekranı desteklemiyor.",
+  "This browser does not support fullscreen."
+ ],
+ [
+  "Uygulama yüklendi.",
+  "App installed."
+ ],
+ [
+  "Sana özel öneriler",
+  "Picks for you"
+ ],
+ [
+  "Yenile",
+  "Refresh"
+ ],
+ [
+  "Öğrenme: açık",
+  "Learning: on"
+ ],
+ [
+  "Öğrenme: kapalı",
+  "Learning: off"
+ ],
+ [
+  "Öğrenme açık.",
+  "Learning is on."
+ ],
+ [
+  "Öğrenme kapalı.",
+  "Learning is off."
+ ],
+ [
+  "Açıkken dinlediklerin bu cihazda öğrenilir; kapalıyken profil güncellenmez",
+  "When on, what you listen to is learned on this device; when off, the profile is not updated"
+ ],
+ [
+  "Öğrenilen profili sil",
+  "Delete the learned profile"
+ ],
+ [
+  "Öneriler yalnızca bu cihazda, dinlediklerinden hesaplanır. Profilin hiçbir yere gönderilmez; yalnızca aday bulmak için arama servislerine sanatçı/kelime araması yapılır, tıpkı normal arama gibi.",
+  "Picks are computed only on this device from what you listen to. Your profile is never sent anywhere; only artist/keyword searches go to the search services to find candidates, just like a normal search."
+ ],
+ [
+  "Öneriler hazırlanıyor…",
+  "Preparing picks…"
+ ],
+ [
+  "Öneri için biraz veri lazım: birkaç parça dinle ya da listene parça ekle.",
+  "A little data is needed: listen to a few tracks or add tracks to a list."
+ ],
+ [
+  "Yeni öneri bulunamadı. Biraz daha dinleyip yenile.",
+  "No new picks found. Listen a bit more, then refresh."
+ ],
+ [
+  "Şuna benzer: {k}",
+  "Similar to: {k}"
+ ],
+ [
+  "Şu an çalanla benzer",
+  "Similar to what is playing"
+ ],
+ [
+  "Sık geçen kelimeler: {w}",
+  "Words you often play: {w}"
+ ],
+ [
+  "Bunu önerme",
+  "Don’t suggest this"
+ ],
+ [
+  "Bu sanatçıyı önerme",
+  "Don’t suggest this artist"
+ ],
+ [
+  "Bir daha önerilmeyecek.",
+  "Won’t be suggested again."
+ ],
+ [
+  "Bu sanatçı artık önerilmeyecek: {a}",
+  "This artist won’t be suggested anymore: {a}"
+ ],
+ [
+  "Öğrenilenleri sıfırla",
+  "Reset what was learned"
+ ],
+ [
+  "Öneriler için bu cihazda tutulan dinleme profili silinecek. Listelerin etkilenmez.",
+  "The listening profile kept on this device for picks will be deleted. Your lists are not affected."
+ ],
+ [
+  "Öneri profili sıfırlandı.",
+  "Recommendation profile reset."
+ ],
+ [
+  "Beğen",
+  "Like"
+ ],
+ [
+  "Beğenme",
+  "Dislike"
+ ],
+ [
+  "Beğen: bu tür parçalar daha çok önerilir",
+  "Like: more tracks like this will be suggested"
+ ],
+ [
+  "Beğenme: bu tür parçalar önerilmez ve sıradakine geçilir",
+  "Dislike: tracks like this won’t be suggested and it skips to the next"
+ ],
+ [
+  "Beğenildi: öneriler buna göre güncellenecek.",
+  "Liked: suggestions will adapt."
+ ],
+ [
+  "Beğenme kaldırıldı.",
+  "Rating removed."
+ ],
+ [
+  "Beğenilmedi: bu parça ve benzerleri azaltılacak.",
+  "Disliked: this track and similar ones will be reduced."
+ ],
+ [
+  "Beğenmek için öğrenme açık olmalı.",
+  "Learning must be on to rate tracks."
+ ],
+ [
+  "Keşif",
+  "Discovery"
+ ],
+ [
+  "Tanıdık",
+  "Familiar"
+ ],
+ [
+  "Yeni",
+  "New"
+ ],
+ [
+  "Önerilerde tanıdık ile yeni arasındaki denge",
+  "Balance between familiar and new in picks"
+ ],
+ [
+  "Beğendiğin parçaya benzer",
+  "Similar to a track you liked"
+ ],
+ [
+  "Keşif: {k}",
+  "Discovery: {k}"
+ ],
+ [
+  "Eşleşen kelimeler: {w}",
+  "Matching words: {w}"
+ ],
+ [
+  "Depolama",
+  "Storage"
+ ],
+ [
+  "Depolama kullanımı",
+  "Storage usage"
+ ],
+ [
+  "Depolama: {a} / ~{b} (%{p})",
+  "Storage: {a} / ~{b} (%{p})"
+ ],
+ [
+  "Bu uygulama: {s}",
+  "This app: {s}"
+ ],
+ [
+  "Bu adresteki tüm site verisi: {s}",
+  "All site data at this address: {s}"
+ ],
+ [
+  "Tahmini sınır: {s}",
+  "Estimated limit: {s}"
+ ],
+ [
+  "Listeler ve durum: {s}",
+  "Lists and state: {s}"
+ ],
+ [
+  "Öneri profili: {s}",
+  "Recommendation profile: {s}"
+ ],
+ [
+  "Servis listesi: {s}",
+  "Service list: {s}"
+ ],
+ [
+  "Servis durumu: {s}",
+  "Service status: {s}"
+ ],
+ [
+  "Arama geçmişi: {s}",
+  "Search history: {s}"
+ ],
+ [
+  "Ayarlar: {s}",
+  "Settings: {s}"
+ ],
+ [
+  "Diğer: {s}",
+  "Other: {s}"
+ ],
+ [
+  "Sınır tarayıcıya göre değişir. Aynı adresi (örn. kullaniciadi.github.io) kullanan diğer siteler de aynı alanı paylaşır.",
+  "The limit varies by browser. Other sites using the same address (e.g. username.github.io) share the same space."
+ ],
+ [
+  "Arama geçmişini temizle",
+  "Clear search history"
+ ],
+ [
+  "Arama geçmişi temizlendi.",
+  "Search history cleared."
+ ],
+ [
+  "Depolama %{p} dolu. Yedek alıp gereksiz verileri temizlemeni öneririm.",
+  "Storage is %{p} full. I recommend downloading a backup and clearing unneeded data."
+ ],
+ [
+  "Depolama dolu: değişiklikler kaydedilemedi. Yedek alıp listeleri küçült.",
+  "Storage is full: changes could not be saved. Download a backup and shrink your lists."
+ ],
+ [
+  "QR kod ile paylaş",
+  "Share with QR code"
+ ],
+ [
+  "QR kod",
+  "QR code"
+ ],
+ [
+  "QR ile paylaş",
+  "Share with QR"
+ ],
+ [
+  "PNG indir",
+  "Download PNG"
+ ],
+ [
+  "QR kod indirildi.",
+  "QR code downloaded."
+ ],
+ [
+  "“{n}” · {k} video",
+  "“{n}” · {k} videos"
+ ],
+ [
+  "Telefonunun kamerasıyla okut; liste yeni bir liste olarak eklenmek üzere açılır. Liste yalnızca bağlantıda taşınır, hiçbir sunucuya gönderilmez.",
+  "Scan it with your phone camera; the list opens, ready to be added as a new list. The list travels only inside the link and is never sent to a server."
+ ],
+ [
+  "Liste büyük olduğu için ilk {n} video QR koda sığdı (toplam {m}). Tamamı için bağlantıyı kopyala.",
+  "Because the list is large, only the first {n} videos fit in the QR code (of {m}). Copy the link to share all of them."
+ ],
+ [
+  "Kod yoğun: ekranı büyüt ve kameraya yaklaş.",
+  "The code is dense: enlarge the screen and move the camera closer."
+ ],
+ [
+  "Bu adres yalnızca bu bilgisayarda açılır; telefon açamaz. Sitenin yayınlanmış https adresinden dene.",
+  "This address only opens on this computer; a phone can’t open it. Try it from the site’s published https address."
+ ],
+ [
+  "QR kod oluşturulamadı.",
+  "Could not create the QR code."
+ ]
+];
+  const EXACT = new Map(), PATS = [];
+  for (const [k, v] of DICT) {
+    if (!k.includes('{')) { EXACT.set(k, v); continue; }
+    const parts = k.split(/\{(\w+)\}/), names = [];
+    let src = '';
+    parts.forEach((p, i) => { if (i % 2) { names.push(p); src += '(.+?)'; } else src += p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+    PATS.push({ re: new RegExp('^' + src + '$'), names, to: v, pre: parts[0], suf: parts[parts.length - 1], lit: k.replace(/\{\w+\}/g, '').length });
+  }
+  PATS.sort((x, y) => y.lit - x.lit);
+  const SVC_EN = { 'denenmedi': 'not tried', 'deneniyor': 'trying', 'çalışıyor': 'working', 'yanıt vermedi': 'no response' };
+  function tr1(c, d) {
+    if (EXACT.has(c)) return EXACT.get(c);
+    const m = /^(.+) — (denenmedi|deneniyor|çalışıyor|yanıt vermedi)((?: · \d+ ms)?)((?: ★)?)$/.exec(c);
+    if (m) { const l = trText(m[1], d + 1); return (l == null ? m[1] : l) + ' — ' + SVC_EN[m[2]] + m[3] + m[4]; }
+    for (const p of PATS) {
+      if (p.pre && !c.startsWith(p.pre)) continue;
+      if (p.suf && !c.endsWith(p.suf)) continue;
+      const r = p.re.exec(c); if (!r) continue;
+      return p.to.replace(/\{(\w+)\}/g, (_, n) => { const v = r[1 + p.names.indexOf(n)]; const t = trText(v, d + 1); return t == null ? v : t; });
+    }
+    return null;
+  }
+  function trText(s, d) {
+    d = d || 0;
+    if (typeof s !== 'string' || !s || d > 3) return null;
+    const m = /^(\s*)([\s\S]*?)(\s*)$/.exec(s), core = m[2];
+    if (!core) return null;
+    for (const sep of [', ', ' • ', '\n']) {
+      if (!core.includes(sep)) continue;
+      const ts = core.split(sep).map(x => trText(x, d + 1));
+      if (ts.every(t => t != null)) return m[1] + ts.join(sep) + m[3];
+    }
+    let r = tr1(core, d);
+    if (r == null) {
+      for (const sep of ['\n', ' • ', ', ']) {
+        if (!core.includes(sep)) continue;
+        let any = false;
+        const out = core.split(sep).map(x => { const t = trText(x, d + 1); if (t != null) any = true; return t == null ? x : t; });
+        if (any) { r = out.join(sep); break; }
+      }
+    }
+    return r == null ? null : m[1] + r + m[3];
+  }
+  const TR_ATTRS = ['title', 'aria-label', 'placeholder', 'alt'];
+  let orig = new WeakMap();
+  const skipTxt = n => { const p = n.parentNode; return !p || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE' || (p.classList && p.classList.contains('t')); };
+  function xText(n) {
+    if (skipTxt(n)) return;
+    const v = n.data, r = orig.get(n);
+    if (r && v === r.en) return;
+    const e = trText(v);
+    if (e != null && e !== v) { orig.set(n, { tr: v, en: e }); n.data = e; } else if (r) orig.delete(n);
+  }
+  function xAttrs(e) {
+    if (!e.hasAttribute) return;
+    for (const a of TR_ATTRS) {
+      if (!e.hasAttribute(a)) continue;
+      const v = e.getAttribute(a); let rec = orig.get(e); const ra = rec && rec[a];
+      if (ra && v === ra.en) continue;
+      const t = trText(v);
+      if (t != null && t !== v) { if (!rec) { rec = {}; orig.set(e, rec); } rec[a] = { tr: v, en: t }; e.setAttribute(a, t); } else if (ra) delete rec[a];
+    }
+  }
+  function xTree(root) {
+    if (root.nodeType === 3) { xText(root); return; }
+    if (root.nodeType !== 1 || root.nodeName === 'SCRIPT' || root.nodeName === 'STYLE') return;
+    xAttrs(root);
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) { if (n.nodeType === 3) xText(n); else xAttrs(n); }
+  }
+  function xRestore(root) {
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+    for (let n = w.currentNode; n; n = w.nextNode()) {
+      const r = orig.get(n); if (!r) continue;
+      if (n.nodeType === 3) { if (n.data === r.en) n.data = r.tr; }
+      else for (const a of Object.keys(r)) if (n.getAttribute(a) === r[a].en) n.setAttribute(a, r[a].tr);
+    }
+    orig = new WeakMap();
+  }
+  function renderLang() {
+    const b = $('#btnLang');
+    b.textContent = lang === 'en' ? 'EN' : 'TR';
+    const t = lang === 'en' ? 'Language: English — click for Türkçe' : 'Dil: Türkçe — English için tıkla';
+    b.title = t; b.setAttribute('aria-label', t);
+  }
+  function setLang(l, silent) {
+    lang = l === 'en' ? 'en' : 'tr';
+    try { localStorage.setItem(LS_LANG, lang); } catch { /* yoksay */ }
+    document.documentElement.lang = lang;
+    if (lang === 'en') xTree(document.body); else xRestore(document.body);
+    renderLang();
+    if (!silent) render();
+  }
+  function startLang() {
+    new MutationObserver(ms => {
+      if (lang !== 'en') return;
+      for (const m of ms) {
+        if (m.type === 'childList') m.addedNodes.forEach(xTree);
+        else if (m.type === 'characterData') xText(m.target);
+        else if (m.type === 'attributes') xAttrs(m.target);
+      }
+    }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: TR_ATTRS });
+    setLang(lang, true);
+  }
+
+  /* ——— Öneri: cihazda çalışan, hafif, veri toplamayan ———
+     Profil (sanatçı ve başlık kelimesi ağırlıkları) yalnızca localStorage'da durur ve hiçbir yere gönderilmez.
+     Aday bulmak için normal aramayla aynı servislere sanatçı/kelime araması yapılır; puanlama tamamen yerelde. */
+  const LS_TASTE = 'Web_Music_Player_by_SoftArchX.taste';
+  const NOISE = new Set(('official video music audio lyrics lyric feat ft hd hq 4k mv clip klip resmi sözleri sozleri şarkı sarki full live version ' +
+    'remastered the and with from for you your https www com topic vevo bir ile için icin ama çok cok daha gibi olan').split(' '));
+  const pickN = (o, max, hi) => {
+    const out = Object.create(null);
+    if (o && typeof o === 'object' && !Array.isArray(o)) {
+      Object.entries(o).filter(([k, v]) => typeof k === 'string' && k && k.length <= 60 && Number.isFinite(v) && v > 0)
+        .sort((a, b) => b[1] - a[1]).slice(0, max).forEach(([k, v]) => { out[clean(k, 60).toLowerCase()] = Math.min(hi, Math.round(v * 100) / 100); });
+    }
+    return out;
+  };
+  function sanitizeTaste(d) {
+    d = d && typeof d === 'object' ? d : {};
+    const lk = Object.create(null);
+    if (d.lk && typeof d.lk === 'object' && !Array.isArray(d.lk)) {
+      Object.entries(d.lk).filter(([k, v]) => ID_RE.test(k) && (v === 1 || v === -1)).slice(0, 300).forEach(([k, v]) => { lk[k] = v; });
+    }
+    return {
+      on: d.on !== false, a: pickN(d.a, 80, 500), w: pickN(d.w, 150, 500), na: pickN(d.na, 60, 1), nw: pickN(d.nw, 50, 50),
+      nv: (Array.isArray(d.nv) ? d.nv : []).filter(x => typeof x === 'string' && ID_RE.test(x)).slice(0, 300),
+      lk, ls: (Array.isArray(d.ls) ? d.ls : []).map(x => clean(x, 60).toLowerCase()).filter(Boolean).slice(0, 20),
+      ex: Number.isFinite(d.ex) ? Math.min(1, Math.max(0, Math.round(d.ex * 100) / 100)) : 0.25
+    };
+  }
+  let taste = sanitizeTaste(null);
+  try { taste = sanitizeTaste(JSON.parse(localStorage.getItem(LS_TASTE) || 'null')); } catch { /* yoksay */ }
+  function saveTaste() { try { localStorage.setItem(LS_TASTE, JSON.stringify(taste)); } catch { /* yoksay */ } }
+  const authorKey = a => clean(a || '', 60).toLowerCase().replace(/\s*-\s*topic$/, '').replace(/\s*vevo$/, '').trim();
+  function tokens(t) {
+    const s = String(t || '').toLowerCase().replace(/̇/g, '').replace(/[(\[][^)\]]*[)\]]/g, ' ');
+    const out = [];
+    for (const x of s.split(/[^\p{L}\p{N}]+/u)) if (x.length >= 3 && x.length <= 24 && !/^\d+$/.test(x) && !NOISE.has(x) && !out.includes(x)) out.push(x);
+    return out.slice(0, 8);
+  }
+  function addW(m, k, v) { m[k] = Math.max(0, (m[k] || 0) + v); if (!m[k]) delete m[k]; }
+  function decay(m, f) { for (const k of Object.keys(m)) { m[k] = Math.round(m[k] * f * 1000) / 1000; if (m[k] < 0.05) delete m[k]; } }
+  function shrink(m, f) { for (const k of Object.keys(m)) { m[k] = Math.round(m[k] * f * 100) / 100; if (m[k] < 0.2) delete m[k]; } }
+  const sumW = m => Object.values(m).reduce((x, y) => x + y, 0);
+  function learn(it, w) {
+    if (!taste.on || !it) return;
+    const ak = authorKey(it.author);
+    if (w > 0) { decay(taste.a, 0.985); decay(taste.w, 0.985); }
+    if (ak) addW(taste.a, ak, w);
+    if (w > 0) for (const t of tokens(it.title)) addW(taste.w, t, w * 0.5);
+    if (sumW(taste.a) > 300) shrink(taste.a, 0.7);
+    if (sumW(taste.w) > 400) shrink(taste.w, 0.7);
+    for (const [m, max] of [[taste.a, 80], [taste.w, 150]]) {
+      const ks = Object.keys(m); if (ks.length > max) ks.sort((x, y) => m[y] - m[x]).slice(max).forEach(k => delete m[k]);
+    }
+    saveTaste();
+  }
+  /* Bir parça en az 30 sn gerçekten çalındıysa "dinlendi" sayılır; 10 sn dolmadan elle atlanırsa sanatçı hafifçe geriye gider. */
+  let lis = { vid: '', sec: 0, done: false, t: 0 };
+  function trackListen() {
+    const now = Date.now(), dt = lis.t ? Math.min(2000, now - lis.t) : 0; lis.t = now;
+    const n = state.now; if (!n) return;
+    if (lis.vid !== n.vid) { lis = { vid: n.vid, sec: 0, done: false, t: now }; return; }
+    if (playing && !lis.done) { lis.sec += dt / 1000; if (lis.sec >= 30) { lis.done = true; learn(curItem(), 1); } }
+  }
+  function noteSkip() {
+    const n = state.now;
+    if (!taste.on || !n || lis.vid !== n.vid || lis.done || lis.sec < 0.5 || lis.sec >= 10) return;
+    lis.done = true;
+    const it = curItem(), ak = it && authorKey(it.author);
+    if (ak) { addW(taste.a, ak, -0.4); saveTaste(); }
+  }
+
+  const R = { status: 'idle', items: [], msg: '', at: 0, busy: false, pool: [] };
+  const LONG_RE = /(\b\d+\s*(?:hours?|hrs?|saat)\b|full album|non[- ]?stop|\bmix\b|compilation|playlist)/i;
+  function recProfile() {
+    const A = new Map(Object.entries(taste.a)), W = new Map(Object.entries(taste.w));
+    const ac = new Map(), wc = new Map();
+    for (const p of state.playlists) for (const it of p.items) {
+      const ak = authorKey(it.author); if (ak) ac.set(ak, (ac.get(ak) || 0) + 1);
+      for (const t of tokens(it.title)) wc.set(t, (wc.get(t) || 0) + 1);
+    }
+    for (const [k, c] of ac) A.set(k, (A.get(k) || 0) + Math.min(3, c * 0.3));
+    for (const [k, c] of wc) W.set(k, (W.get(k) || 0) + Math.min(3, c * 0.1));
+    for (const k of Object.keys(taste.na)) A.delete(k);
+    const mx = m => Math.max(1e-6, ...m.values());
+    return { A, W, maxA: mx(A), maxW: mx(W) };
+  }
+  function pickWeighted(entries, n) {
+    const pool = entries.slice(0, 8), out = [];
+    while (out.length < n && pool.length) {
+      let t = Math.random() * pool.reduce((a, e) => a + e[1], 0), j = 0;
+      for (; j < pool.length - 1; j++) { t -= pool[j][1]; if (t <= 0) break; }
+      out.push(pool.splice(j, 1)[0][0]);
+    }
+    return out;
+  }
+  function recSeeds(P) {
+    const aTop = [...P.A].filter(e => e[1] > 0).sort((x, y) => y[1] - x[1]);
+    const wTop = [...P.W].filter(e => e[1] > 0).sort((x, y) => y[1] - x[1]);
+    const as = pickWeighted(aTop, 2), seeds = [];
+    if (taste.ls.length) seeds.push({ q: taste.ls[Math.floor(Math.random() * taste.ls.length)], why: 'Beğendiğin parçaya benzer' });
+    if (as[0]) seeds.push({ q: as[0], why: 'Şuna benzer: ' + as[0] });
+    if (taste.ex >= 0.6 && aTop.length > 4) { const e = aTop.slice(4, 12), k = e[Math.floor(Math.random() * e.length)][0]; seeds.push({ q: k, why: 'Keşif: ' + k }); }
+    const cur = curItem();
+    if (cur) {
+      const q = [...new Set([authorKey(cur.author), ...tokens(cur.title).slice(0, 2)])].filter(Boolean).join(' ');
+      if (q && !seeds.some(x => x.q === q)) seeds.push({ q, why: 'Şu an çalanla benzer' });
+    }
+    if (wTop.length >= 2) { const ws = pickWeighted(wTop, 2).join(' '); seeds.push({ q: ws, why: 'Sık geçen kelimeler: ' + ws }); }
+    if (as[1]) seeds.push({ q: as[1], why: 'Şuna benzer: ' + as[1] });
+    return seeds.filter((x, i, a) => a.findIndex(y => y.q === x.q) === i).slice(0, 3);
+  }
+  async function recRefresh() {
+    if (R.busy) return;
+    const P = recProfile(), seeds = recSeeds(P);
+    if (!seeds.length) { R.status = 'cold'; R.items = []; R.pool = []; renderRec(); return; }
+    R.busy = true; R.status = 'busy'; renderRec();
+    const seen = new Map();
+    let okAny = false, lastErr = null;
+    for (const sd of seeds) {
+      try {
+        const items = await searchFree(sd.q); okAny = true;
+        items.forEach((it, idx) => { if (!seen.has(it.id)) seen.set(it.id, { it, idx, why: sd.why, r1: Math.random(), r2: Math.random() }); });
+      } catch (e) { lastErr = e; if (!okAny) break; }
+    }
+    R.busy = false;
+    if (!okAny) { R.status = 'err'; R.msg = (lastErr && lastErr.message) || 'Arama başarısız.'; R.items = []; R.pool = []; renderRec(); return; }
+    R.pool = [...seen.values()]; R.at = Date.now();
+    recRank();
+  }
+  /* Puanlama (tamamen yerelde): sanatçı yakınlığı + başlık kelimesi yakınlığı + arama sırası; "keşif" payı bilinmeyen
+     sanatçılara ve rastgeleliğe ağırlık verir; beğenilmeyen kelimeler puanı düşürür; uzun mix/albüm videoları elenir. */
+  function recRank() {
+    const P = recProfile(), ex = taste.ex;
+    const have = new Set([...state.queue.map(x => x.id), ...state.recent, ...taste.nv]);
+    state.playlists.forEach(p => p.items.forEach(x => have.add(x.id)));
+    const nwMax = Math.max(1, ...Object.values(taste.nw));
+    const cands = [];
+    for (const { it, idx, why, r1, r2 } of R.pool) {
+      const ak = authorKey(it.author);
+      if (have.has(it.id) || (ak && taste.na[ak]) || LONG_RE.test(it.title)) continue;
+      const tk = tokens(it.title), hit = tk.filter(t => P.W.has(t));
+      const a = ak && P.A.has(ak) ? P.A.get(ak) / P.maxA : 0;
+      const w = Math.min(1, tk.reduce((x, t) => x + (P.W.get(t) || 0), 0) / (P.maxW * 3));
+      const neg = Math.min(1, tk.reduce((x, t) => x + (taste.nw[t] || 0), 0) / (nwMax * 3));
+      const novel = ak && !P.A.has(ak) ? 1 : 0;
+      const base = 0.55 * a + 0.35 * w + 0.15 * (1 - idx / 25);
+      const score = (1 - 0.6 * ex) * base + ex * (0.35 * novel + 0.25 * r1) + 0.08 * r2 - 0.5 * neg;
+      cands.push({ it: Object.assign({}, it, { why, how: hit.length ? 'Eşleşen kelimeler: ' + hit.slice(0, 3).join(', ') : '' }), ak, score });
+    }
+    cands.sort((x, y) => y.score - x.score);
+    const per = new Map(), out = [];
+    for (const c of cands) {
+      const n = per.get(c.ak) || 0;
+      if (c.ak && n >= 2) continue;
+      per.set(c.ak, n + 1); out.push(c.it);
+      if (out.length >= 15) break;
+    }
+    R.items = out; R.status = out.length ? 'ok' : 'none'; renderRec();
+  }
+  function recOpen() {
+    if (R.busy) return;
+    if (R.status === 'idle' || R.status === 'cold' || (R.at && Date.now() - R.at > 30 * 60000)) recRefresh();
+  }
+  function playExt(it) {
+    const now = state.now, pl = (now && plById(now.plId)) || active();
+    playVid(pl.id, it.id, { ext: { id: it.id, title: it.title, author: it.author || '' }, from: now ? (now.q ? now.from : now.vid) : null });
+  }
+  function dismissRec(it, artist) {
+    const ak = authorKey(it.author);
+    if (artist && ak) {
+      taste.na[ak] = 1; delete taste.a[ak];
+      R.items = R.items.filter(x => authorKey(x.author) !== ak);
+      toast('Bu sanatçı artık önerilmeyecek: ' + it.author, 'ok');
+    } else {
+      taste.nv = [it.id, ...taste.nv.filter(x => x !== it.id)].slice(0, 300);
+      if (ak) addW(taste.a, ak, -0.7);
+      R.items = R.items.filter(x => x.id !== it.id);
+      toast('Bir daha önerilmeyecek.', 'ok');
+    }
+    saveTaste(); renderRec();
+  }
+  /* Açık geri bildirim: 👍 sanatçıyı ve kelimeleri güçlendirir, benzer parçaları arama tohumu yapar; 👎 geriletir ve sıradakine geçer. */
+  function applyRate(it, v, sg) {
+    const ak = authorKey(it.author), tk = tokens(it.title);
+    if (v > 0) {
+      if (ak) addW(taste.a, ak, 2 * sg);
+      tk.forEach(t => addW(taste.w, t, sg));
+      const q = [...new Set([ak, ...tk.slice(0, 2)])].filter(Boolean).join(' ');
+      if (q) taste.ls = sg > 0 ? [q, ...taste.ls.filter(x => x !== q)].slice(0, 20) : taste.ls.filter(x => x !== q);
+    } else {
+      if (ak) addW(taste.a, ak, -1.5 * sg);
+      tk.forEach(t => addW(taste.nw, t, 0.5 * sg));
+      taste.nv = sg > 0 ? [it.id, ...taste.nv.filter(x => x !== it.id)].slice(0, 300) : taste.nv.filter(x => x !== it.id);
+    }
+  }
+  function rateCur(v) {
+    const it = curItem(); if (!it) return;
+    if (!taste.on) { toast('Beğenmek için öğrenme açık olmalı.', 'warn'); return; }
+    const cur = taste.lk[it.id] || 0;
+    if (cur) applyRate(it, cur, -1);
+    if (cur === v) { delete taste.lk[it.id]; toast('Beğenme kaldırıldı.', 'ok'); }
+    else {
+      applyRate(it, v, 1); taste.lk[it.id] = v;
+      const ks = Object.keys(taste.lk); if (ks.length > 300) delete taste.lk[ks[0]];
+      toast(v > 0 ? 'Beğenildi: öneriler buna göre güncellenecek.' : 'Beğenilmedi: bu parça ve benzerleri azaltılacak.', 'ok');
+    }
+    saveTaste(); renderLike(); if (R.pool.length) recRank();
+    if (v < 0 && taste.lk[it.id] === -1) { lis.done = true; go(1); }
+  }
+  function renderLike() {
+    const it = curItem(), v = it ? (taste.lk[it.id] || 0) : 0;
+    for (const [id, want] of [['#btnLike', 1], ['#btnDislike', -1]]) { const b = $(id); b.disabled = !it; b.setAttribute('aria-pressed', String(v === want)); }
+  }
+  function renderRec() {
+    const st = $('#recStatus'), ul = $('#recItems');
+    $('#btnRecOn').textContent = 'Öğrenme: ' + (taste.on ? 'açık' : 'kapalı');
+    $('#btnRecOn').setAttribute('aria-pressed', String(taste.on));
+    $('#btnRecRefresh').disabled = R.busy;
+    if (document.activeElement !== $('#recEx')) $('#recEx').value = String(Math.round(taste.ex * 100));
+    const msg = { busy: 'Öneriler hazırlanıyor…', cold: 'Öneri için biraz veri lazım: birkaç parça dinle ya da listene parça ekle.', none: 'Yeni öneri bulunamadı. Biraz daha dinleyip yenile.', err: R.msg }[R.status];
+    st.hidden = !msg; st.textContent = msg || ''; st.classList.toggle('err', R.status === 'err');
+    const pl = active();
+    ul.replaceChildren(...R.items.map(it => rowEl(it, {
+      why: it.why, how: it.how,
+      main: () => playExt(it),
+      acts: [
+        ibtn('queue', 'Sıraya ekle', () => addQueue(it)),
+        pl.items.some(x => x.id === it.id) ? ibtn('check', 'Listede', () => {}, { disabled: true })
+          : ibtn('plus', 'Listeye ekle', () => { addItems(active(), [it]); learn(it, 1); toast('Eklendi: ' + it.title, 'ok'); }),
+        ibtn('more', 'Diğer işlemler', e => openMenu(e.currentTarget, [
+          ['Bunu önerme', () => dismissRec(it, false)],
+          ...(authorKey(it.author) ? [['Bu sanatçıyı önerme', () => dismissRec(it, true)]] : []),
+          ['Bağlantıyı kopyala', () => copyText('https://www.youtube.com/watch?v=' + it.id)]
+        ]))
+      ]
+    })));
+  }
+
+  /* ——— Depolama göstergesi ———
+     Tarayıcı localStorage alanı küçüktür (genelde ~5 MB, siteye göre paylaşılır). Kullanımı ölçüp %80'de uyarır. */
+  const PFX = 'Web_Music_Player_by_SoftArchX.', STO_LIMIT = 5 * 1024 * 1024;
+  const fmtB = b => b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(b < 10240 ? 1 : 0) + ' KB' : Number((b / 1048576).toFixed(2)) + ' MB';
+  const STO_NAMES = { v1: 'Listeler ve durum', taste: 'Öneri profili', svccfg: 'Servis listesi', svcstate: 'Servis durumu', searches: 'Arama geçmişi', svc: 'Ayarlar', theme: 'Ayarlar', lang: 'Ayarlar', sleepmin: 'Ayarlar' };
+  function stoUsage() {
+    let app = 0, all = 0; const g = {};
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i) || '', b = (k.length + (localStorage.getItem(k) || '').length) * 2;
+        all += b;
+        if (k.startsWith(PFX)) { app += b; const n = STO_NAMES[k.slice(PFX.length)] || 'Diğer'; g[n] = (g[n] || 0) + b; }
+      }
+    } catch { /* yoksay */ }
+    return { app, all, g };
+  }
+  let stoWarned = false, stoAt = 0, stoFullAt = 0;
+  function renderSto(force) {
+    if (!force && Date.now() - stoAt < 2000) return;
+    stoAt = Date.now();
+    const u = stoUsage(), p = Math.min(100, u.all / STO_LIMIT * 100);
+    $('#stoFill').style.width = Math.max(1, p) + '%';
+    $('#stoText').textContent = 'Depolama: ' + fmtB(u.all) + ' / ~' + fmtB(STO_LIMIT) + ' (%' + (p < 10 ? p.toFixed(1) : Math.round(p)) + ')';
+    $('#btnSto').classList.toggle('warn', p >= 80);
+    if (p >= 80 && !stoWarned) { stoWarned = true; toast('Depolama %' + Math.round(p) + ' dolu. Yedek alıp gereksiz verileri temizlemeni öneririm.', 'warn', 8000); }
+  }
+  function stoFull() {
+    if (Date.now() - stoFullAt < 60000) return;
+    stoFullAt = Date.now();
+    toast('Depolama dolu: değişiklikler kaydedilemedi. Yedek alıp listeleri küçült.', 'err', 9000);
+    try { renderSto(true); } catch { /* yoksay */ }
+  }
+  async function showSto() {
+    const u = stoUsage();
+    const lines = ['Bu uygulama: ' + fmtB(u.app), ...Object.entries(u.g).sort((a, b) => b[1] - a[1]).map(([n, b]) => n + ': ' + fmtB(b))];
+    if (u.all > u.app) lines.push('Bu adresteki tüm site verisi: ' + fmtB(u.all));
+    lines.push('Tahmini sınır: ' + fmtB(STO_LIMIT));
+    const yes = await ask({
+      title: 'Depolama',
+      message: lines.join('\n') + '\n\nSınır tarayıcıya göre değişir. Aynı adresi (örn. kullaniciadi.github.io) kullanan diğer siteler de aynı alanı paylaşır.',
+      ok: 'Arama geçmişini temizle', cancel: 'Kapat'
+    });
+    if (yes) { searches = []; saveSh(); renderSh(); renderSto(true); toast('Arama geçmişi temizlendi.', 'ok'); }
+  }
+
+  /* QR-BEGIN */
+  /* Bağımlılıksız QR kod üretici (bayt kipi, hata düzeltme L/M, sürüm 1–40). Tamamen tarayıcıda çalışır. */
+  const QR = (() => {
+    const ECPB = { L: [-1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
+      M: [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28] };
+    const NBLK = { L: [-1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25],
+      M: [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49] };
+    const FMT = { L: 1, M: 0 };
+    const rawModules = v => {
+      let r = (16 * v + 128) * v + 64;
+      if (v >= 2) { const n = Math.floor(v / 7) + 2; r -= (25 * n - 10) * n - 55; if (v >= 7) r -= 36; }
+      return r;
+    };
+    const dataCw = (v, l) => Math.floor(rawModules(v) / 8) - ECPB[l][v] * NBLK[l][v];
+    const capacity = (v, l) => Math.floor((dataCw(v, l) * 8 - 4 - (v <= 9 ? 8 : 16)) / 8);
+    const mul = (x, y) => { let z = 0; for (let i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z; };
+    const gen = d => { const r = new Array(d).fill(0); r[d - 1] = 1; let root = 1; for (let i = 0; i < d; i++) { for (let j = 0; j < d; j++) { r[j] = mul(r[j], root); if (j + 1 < d) r[j] ^= r[j + 1]; } root = mul(root, 2); } return r; };
+    const rem = (data, div) => { const r = new Array(div.length).fill(0); for (const b of data) { const f = b ^ r.shift(); r.push(0); div.forEach((c, i) => { r[i] ^= mul(c, f); }); } return r; };
+    const bit = (x, i) => ((x >>> i) & 1) !== 0;
+
+    function encode(bytes, level) {
+      let v = 1;
+      while (v <= 40 && capacity(v, level) < bytes.length) v++;
+      if (v > 40) return null;
+      // veri bitleri
+      const bits = [];
+      const put = (val, n) => { for (let i = n - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+      put(4, 4); put(bytes.length, v <= 9 ? 8 : 16); bytes.forEach(b => put(b, 8));
+      const cap = dataCw(v, level) * 8;
+      put(0, Math.min(4, cap - bits.length));
+      while (bits.length % 8) bits.push(0);
+      for (let pad = 0xEC; bits.length < cap; pad ^= 0xEC ^ 0x11) put(pad, 8);
+      const data = [];
+      for (let i = 0; i < bits.length; i += 8) data.push(parseInt(bits.slice(i, i + 8).join(''), 2));
+      // hata düzeltme + serpiştirme
+      const nb = NBLK[level][v], el = ECPB[level][v], raw = Math.floor(rawModules(v) / 8);
+      const nShort = nb - raw % nb, shortLen = Math.floor(raw / nb), div = gen(el), blocks = [];
+      for (let i = 0, k = 0; i < nb; i++) {
+        const d = data.slice(k, k + shortLen - el + (i < nShort ? 0 : 1)); k += d.length;
+        const e = rem(d, div); if (i < nShort) d.push(0); blocks.push(d.concat(e));
+      }
+      const all = [];
+      for (let i = 0; i < blocks[0].length; i++) blocks.forEach((b, j) => { if (i !== shortLen - el || j >= nShort) all.push(b[i]); });
+      // matris
+      const size = v * 4 + 17;
+      const m = Array.from({ length: size }, () => new Array(size).fill(false));
+      const fn = Array.from({ length: size }, () => new Array(size).fill(false));
+      const setF = (x, y, d) => { m[y][x] = d; fn[y][x] = true; };
+      for (let i = 0; i < size; i++) { setF(6, i, i % 2 === 0); setF(i, 6, i % 2 === 0); }
+      const finder = (x, y) => { for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const d = Math.max(Math.abs(dx), Math.abs(dy)), xx = x + dx, yy = y + dy; if (xx >= 0 && xx < size && yy >= 0 && yy < size) setF(xx, yy, d !== 2 && d !== 4); } };
+      finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+      const na = v === 1 ? 0 : Math.floor(v / 7) + 2, step = v === 32 ? 26 : Math.ceil((v * 4 + 4) / (na * 2 - 2)) * 2;
+      const ap = v === 1 ? [] : [6]; for (let p = size - 7; ap.length < na; p -= step) ap.splice(1, 0, p);
+      for (let i = 0; i < na; i++) for (let j = 0; j < na; j++) {
+        if ((i === 0 && j === 0) || (i === 0 && j === na - 1) || (i === na - 1 && j === 0)) continue;
+        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) setF(ap[i] + dx, ap[j] + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+      }
+      const drawFmt = mask => {
+        const d = (FMT[level] << 3) | mask; let r = d;
+        for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);
+        const b = ((d << 10) | r) ^ 0x5412;
+        for (let i = 0; i <= 5; i++) setF(8, i, bit(b, i));
+        setF(8, 7, bit(b, 6)); setF(8, 8, bit(b, 7)); setF(7, 8, bit(b, 8));
+        for (let i = 9; i < 15; i++) setF(14 - i, 8, bit(b, i));
+        for (let i = 0; i < 8; i++) setF(size - 1 - i, 8, bit(b, i));
+        for (let i = 8; i < 15; i++) setF(8, size - 15 + i, bit(b, i));
+        setF(8, size - 8, true);
+      };
+      drawFmt(0);
+      if (v >= 7) {
+        let r = v; for (let i = 0; i < 12; i++) r = (r << 1) ^ ((r >>> 11) * 0x1F25);
+        const b = (v << 12) | r;
+        for (let i = 0; i < 18; i++) { const c = bit(b, i), a = size - 11 + i % 3, q = Math.floor(i / 3); setF(a, q, c); setF(q, a, c); }
+      }
+      // veriyi yerleştir
+      let k = 0;
+      for (let right = size - 1; right >= 1; right -= 2) {
+        if (right === 6) right = 5;
+        for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) {
+          const x = right - j, y = ((right + 1) & 2) === 0 ? size - 1 - vert : vert;
+          if (!fn[y][x] && k < all.length * 8) { m[y][x] = bit(all[k >>> 3], 7 - (k & 7)); k++; }
+        }
+      }
+      const mask = (mk) => {
+        for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+          let inv;
+          switch (mk) {
+            case 0: inv = (x + y) % 2 === 0; break; case 1: inv = y % 2 === 0; break; case 2: inv = x % 3 === 0; break; case 3: inv = (x + y) % 3 === 0; break;
+            case 4: inv = (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0; break; case 5: inv = x * y % 2 + x * y % 3 === 0; break;
+            case 6: inv = (x * y % 2 + x * y % 3) % 2 === 0; break; default: inv = ((x + y) % 2 + x * y % 3) % 2 === 0;
+          }
+          if (!fn[y][x] && inv) m[y][x] = !m[y][x];
+        }
+      };
+      const penalty = () => {
+        let p = 0;
+        const line = get => {
+          let run = 1, hist = [];
+          for (let i = 0; i < size; i++) {
+            const c = get(i);
+            if (i > 0 && c === get(i - 1)) { run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1;
+            hist.push(c ? 1 : 0);
+          }
+          const s = hist.join('');
+          for (const pat of ['10111010000', '00001011101']) { let at = s.indexOf(pat); while (at >= 0) { p += 40; at = s.indexOf(pat, at + 1); } }
+        };
+        for (let y = 0; y < size; y++) line(i => m[y][i]);
+        for (let x = 0; x < size; x++) line(i => m[i][x]);
+        let dark = 0;
+        for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+          if (m[y][x]) dark++;
+          if (x + 1 < size && y + 1 < size && m[y][x] === m[y][x + 1] && m[y][x] === m[y + 1][x] && m[y][x] === m[y + 1][x + 1]) p += 3;
+        }
+        p += (Math.ceil(Math.abs(dark * 20 - size * size * 10) / (size * size)) - 1) * 10;
+        return p;
+      };
+      let best = 0, bp = Infinity;
+      for (let mk = 0; mk < 8; mk++) { mask(mk); drawFmt(mk); const p = penalty(); if (p < bp) { bp = p; best = mk; } mask(mk); }
+      mask(best); drawFmt(best);
+      return { size, version: v, level, get: (x, y) => m[y][x] };
+    }
+    return { encode, capacity };
+  })();
+  /* QR-END */
+
+  /* QR ile paylaşım: bağlantı (liste # sonrasında) QR koda çevrilir; hiçbir dış servis kullanılmaz. */
+  let qrCur = null;
+  function qrBuild() {
+    const pl = active();
+    if (!pl.items.length) { toast('Liste boş, paylaşacak bir şey yok.', 'warn'); return null; }
+    const base = location.href.split('#')[0] + '#liste=' + encodeURIComponent(pl.name) + '.';
+    const maxN = Math.floor((QR.capacity(40, 'L') - base.length) / 11);
+    if (maxN < 1) { toast('QR kod oluşturulamadı.', 'err'); return null; }
+    const n = Math.min(pl.items.length, 1500, maxN);
+    const url = base + pl.items.slice(0, n).map(i => i.id).join('');
+    const bytes = [...new TextEncoder().encode(url)];
+    const q = QR.encode(bytes, QR.capacity(12, 'M') >= bytes.length ? 'M' : 'L');
+    if (!q) { toast('QR kod oluşturulamadı.', 'err'); return null; }
+    return { q, url, n, total: pl.items.length, name: pl.name };
+  }
+  function drawQR(q) {
+    const cv = $('#qrCv'), quiet = 4, mods = q.size + quiet * 2;
+    const scale = Math.max(2, Math.floor(Math.min(360, innerWidth - 90) / mods));
+    cv.width = cv.height = mods * scale;
+    const c = cv.getContext('2d');
+    c.fillStyle = '#fff'; c.fillRect(0, 0, cv.width, cv.height); c.fillStyle = '#000';
+    for (let y = 0; y < q.size; y++) for (let x = 0; x < q.size; x++) if (q.get(x, y)) c.fillRect((x + quiet) * scale, (y + quiet) * scale, scale, scale);
+  }
+  function showQR() {
+    const r = qrBuild(); if (!r) return;
+    qrCur = r; drawQR(r.q);
+    $('#qrMsg').textContent = '“' + r.name + '” · ' + r.n + ' video';
+    const notes = ['Telefonunun kamerasıyla okut; liste yeni bir liste olarak eklenmek üzere açılır. Liste yalnızca bağlantıda taşınır, hiçbir sunucuya gönderilmez.'];
+    if (r.n < r.total) notes.push('Liste büyük olduğu için ilk ' + r.n + ' video QR koda sığdı (toplam ' + r.total + '). Tamamı için bağlantıyı kopyala.');
+    if (r.q.version >= 25) notes.push('Kod yoğun: ekranı büyüt ve kameraya yaklaş.');
+    if (location.protocol === 'file:' || /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) notes.push('Bu adres yalnızca bu bilgisayarda açılır; telefon açamaz. Sitenin yayınlanmış https adresinden dene.');
+    $('#qrNote').textContent = notes.join('\n');
+    $('#dlgQR').showModal();
+  }
+  function qrPng() {
+    $('#qrCv').toBlob(b => {
+      if (!b) return;
+      const a = el('a', { href: URL.createObjectURL(b), download: 'Web_Music_Player_by_SoftArchX-qr.png' });
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+      toast('QR kod indirildi.', 'ok');
+    }, 'image/png');
   }
 
   /* ——— Olaylar ——— */
@@ -1416,9 +3545,38 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#tabList').addEventListener('click', () => setTab('list'));
     $('#tabSearch').addEventListener('click', () => setTab('search'));
     $('#tabQueue').addEventListener('click', () => setTab('queue'));
+    $('#tabRec').addEventListener('click', () => setTab('rec'));
+    $('#btnRecRefresh').addEventListener('click', () => { R.status = 'idle'; recRefresh(); });
+    $('#btnRecOn').addEventListener('click', () => { taste.on = !taste.on; saveTaste(); renderRec(); toast(taste.on ? 'Öğrenme açık.' : 'Öğrenme kapalı.', 'ok'); });
+    $('#btnRecReset').addEventListener('click', async () => {
+      const yes = await ask({ title: 'Öğrenilenleri sıfırla', message: 'Öneriler için bu cihazda tutulan dinleme profili silinecek. Listelerin etkilenmez.', ok: 'Sıfırla', danger: true });
+      if (!yes) return;
+      taste = sanitizeTaste({ on: taste.on }); saveTaste(); R.items = []; R.pool = []; R.status = 'idle'; R.at = 0;
+      toast('Öneri profili sıfırlandı.', 'ok');
+      if (!$('#panelRec').hidden) recRefresh(); else renderRec();
+    });
+    $('#btnQR').append(icon('qr')); $('#btnLike').append(icon('like')); $('#btnDislike').append(icon('like'));
+    $('#btnQR').addEventListener('click', showQR);
+    $('#qrCopy').addEventListener('click', () => { if (qrCur) copyText(qrCur.url); });
+    $('#qrPng').addEventListener('click', qrPng);
+    $('#btnSto').addEventListener('click', showSto);
+    $('#btnLike').addEventListener('click', () => rateCur(1));
+    $('#btnDislike').addEventListener('click', () => rateCur(-1));
+    $('#recEx').addEventListener('input', e => { taste.ex = +e.target.value / 100; });
+    $('#recEx').addEventListener('change', () => { saveTaste(); if (R.pool.length) recRank(); });
+    $('#btnLang').addEventListener('click', () => { setLang(lang === 'tr' ? 'en' : 'tr'); toast(lang === 'en' ? 'Language: English' : 'Dil: Türkçe', 'ok'); });
     $('#btnShare').addEventListener('click', sharePlaylist);
     $('#btnClean').addEventListener('click', cleanBad);
     $('#btnFs').addEventListener('click', toggleFs);
+    $('#btnSvcCheck').addEventListener('click', checkServices);
+    $('#bkNow').addEventListener('click', () => { exportData(); toast('Yedek dosyası indirildi.', 'ok'); });
+    $('#bkLater').addEventListener('click', () => { state.bkSnooze = Date.now() + 864e5; save(); backupCheck(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) backupCheck(); });
+    $('#btnSvcEdit').addEventListener('click', toggleSvcEdit);
+    $('#svcAdd').addEventListener('submit', addService);
+    $('#btnSvcReset').addEventListener('click', resetServices);
+    $('#btnSmart').addEventListener('click', toggleSmart);
+    $('#btnShClear').addEventListener('click', () => { searches = []; saveSh(); renderSh(); });
     $('#miniPrev').addEventListener('click', () => go(-1));
     $('#miniPlay').addEventListener('click', () => togglePlay());
     $('#miniNext').addEventListener('click', () => go(1));
@@ -1429,7 +3587,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#btnTheme').addEventListener('click', cycleTheme);
     $('#btnHelp').addEventListener('click', showHelp);
     $('#btnRate').addEventListener('click', cycleRate);
-    $('#btnSleep').addEventListener('click', cycleSleep);
+    $('#btnSleep').addEventListener('click', e => openSleepMenu(e.currentTarget));
     $('#plFilter').addEventListener('input', e => { filterQ = e.target.value.trim().toLowerCase(); renderList(); });
     $('#vol').addEventListener('input', e => { state.vol = +e.target.value; try { player.setVolume(state.vol); } catch { /* yoksay */ } save(); });
     $('#seek').addEventListener('input', () => {
@@ -1459,6 +3617,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       const okay = await ask({ title: 'Listeyi sil', message: `“${pl.name}” ve içindeki ${pl.items.length} video silinecek. Bu geri alınamaz.`, ok: 'Sil', danger: true });
       if (!okay) return;
       const wasPlaying = state.now && state.now.plId === pl.id;
+      bump(pl.items.length || 1);
       state.playlists = state.playlists.filter(p => p.id !== pl.id);
       state.activeId = state.playlists[0].id;
       if (wasPlaying) stopAll(); else { save(); render(); }
@@ -1525,11 +3684,14 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     window.addEventListener('pagehide', () => { savePos(); flush(); });
     if (!state.bk) state.bk = Date.now();
     $('#vol').value = String(state.vol);
-    applyTheme(getTheme()); renderRate(); renderSleep();
+    applyTheme(getTheme()); renderRate(); renderSleep(); renderSmart();
     setInterval(tick, 500);
     if ('IntersectionObserver' in window) new IntersectionObserver(es => { screenOut = !es[0].isIntersecting; renderMini(); }, { threshold: 0.1 }).observe(document.querySelector('.screen'));
+    ensureIcon();
     setupPwa();
     render();
+    startLang();
+    renderSto(true);
     backupCheck();
     checkShared();
     window.addEventListener('hashchange', checkShared);

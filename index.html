@@ -154,6 +154,8 @@ body.is-playing .row.playing .eq i:nth-child(3){animation-delay:-.6s}
 #dlgQR .dlg-act{flex-wrap:wrap}
 .rec-note{margin:0 4px 8px;padding:8px 10px;border-radius:10px;background:var(--raise);color:var(--mute);font-size:12.5px;line-height:1.45}
 .lang{min-width:40px;font-weight:700;letter-spacing:.04em}
+.bk.rem{right:auto;left:16px}
+.bk-act{flex-wrap:wrap}
 .bk{position:fixed;right:16px;bottom:16px;z-index:45;max-width:min(380px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.4)}
 .bk p{margin:0 0 10px;font-size:13.5px}
 .bk-act{display:flex;gap:8px}
@@ -355,12 +357,21 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       <div class="srcbar">
         <span id="recInfo">Sana özel öneriler</span>
         <span class="srcbtns">
+          <button class="btn small primary" type="button" id="btnRecPlay" title="Öneri listesini sırayla çalar; karıştırma açıksa akıllı karıştırır">Önerileri çal</button>
           <button class="btn small" type="button" id="btnRecRefresh">Yenile</button>
+          <button class="btn small" type="button" id="btnRecAuto" aria-pressed="true" title="Açıkken yeni dinlediklerine göre öneri listesi kendiliğinden yenilenir (en sık 3 dakikada bir)">Otomatik güncelle: açık</button>
           <button class="btn small" type="button" id="btnRecOn" aria-pressed="true" title="Açıkken dinlediklerin bu cihazda öğrenilir; kapalıyken profil güncellenmez">Öğrenme: açık</button>
           <button class="btn small" type="button" id="btnRecReset" title="Öğrenilen profili sil">Sıfırla</button>
         </span>
       </div>
       <label class="rec-ex"><span>Keşif</span><span>Tanıdık</span><input id="recEx" type="range" min="0" max="100" step="5" value="25" aria-label="Önerilerde tanıdık ile yeni arasındaki denge"><span>Yeni</span></label>
+      <div class="srcbar">
+        <span>Eski parça hatırlatması</span>
+        <span class="srcbtns">
+          <button class="btn small" type="button" id="btnRemNow">Eskiyi hatırlat</button>
+          <button class="btn small" type="button" id="btnRem" aria-pressed="true" title="Arada bir, uzun süredir dinlemediğin sevdiğin bir parçayı hatırlatır (en sık 3 günde bir)">Hatırlatma: açık</button>
+        </span>
+      </div>
       <p class="rec-note">Öneriler yalnızca bu cihazda, dinlediklerinden hesaplanır. Profilin hiçbir yere gönderilmez; yalnızca aday bulmak için arama servislerine sanatçı/kelime araması yapılır, tıpkı normal arama gibi.</p>
       <p class="hint" id="recStatus"></p>
       <ul class="rows" id="recItems"></ul>
@@ -416,6 +427,16 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   <div class="bk-act">
     <button class="btn small primary" type="button" id="bkNow">Yedeği indir</button>
     <button class="btn small" type="button" id="bkLater">Daha sonra</button>
+  </div>
+</div>
+
+<div class="bk rem" id="remBar" role="status" hidden>
+  <p id="remText"></p>
+  <div class="bk-act">
+    <button class="btn small primary" type="button" id="remPlay">Çal</button>
+    <button class="btn small" type="button" id="remQueue">Sıraya ekle</button>
+    <button class="btn small" type="button" id="remLater">Daha sonra</button>
+    <button class="btn small" type="button" id="remClose">Kapat</button>
   </div>
 </div>
 
@@ -538,7 +559,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   /* ——— Durum ——— */
   let state = {
     playlists: [{ id: uid(), name: 'Kitaplık', items: [] }],
-    activeId: null, shuffle: false, repeat: 'off', now: null, queue: [], vol: 100, rate: 1, pos: null, bk: 0, recent: [], smart: true, chg: 0, bkSnooze: 0
+    activeId: null, shuffle: false, repeat: 'off', now: null, queue: [], vol: 100, rate: 1, pos: null, bk: 0, recent: [], smart: true, chg: 0, bkSnooze: 0, lp: {}, remOn: true, remAt: 0
   };
   let playing = false, hist = [], errStreak = 0;
   const played = new Set(), bad = new Set();
@@ -588,6 +609,9 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
         if (Number.isFinite(d.bk) && d.bk > 0) state.bk = d.bk;
         if (Array.isArray(d.recent)) state.recent = d.recent.filter(x => typeof x === 'string' && ID_RE.test(x)).slice(0, 300);
         if (d.smart === false) state.smart = false;
+        if (d.lp && typeof d.lp === 'object' && !Array.isArray(d.lp)) Object.entries(d.lp).slice(0, 4000).forEach(([k, v]) => { if (ID_RE.test(k) && Number.isFinite(v) && v > 0) state.lp[k] = v; });
+        if (d.remOn === false) state.remOn = false;
+        if (Number.isFinite(d.remAt) && d.remAt > 0) state.remAt = d.remAt;
         if (Number.isFinite(d.chg) && d.chg > 0) state.chg = Math.floor(d.chg);
         if (Number.isFinite(d.bkSnooze) && d.bkSnooze > 0) state.bkSnooze = d.bkSnooze;
         if (Array.isArray(d.bad)) d.bad.slice(0, 2000).forEach(x => { if (typeof x === 'string' && ID_RE.test(x)) bad.add(x); });
@@ -599,7 +623,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
   let saveT = 0;
   function flush() {
-    try { localStorage.setItem(LS, JSON.stringify({ v: 1, playlists: state.playlists, activeId: state.activeId, shuffle: state.shuffle, repeat: state.repeat, now: state.now, queue: state.queue, vol: state.vol, rate: state.rate, pos: state.pos, bk: state.bk, recent: state.recent, smart: state.smart, chg: state.chg, bkSnooze: state.bkSnooze, bad: [...bad].slice(0, 2000) })); renderSto(); } catch (e) { if (e && e.name === 'QuotaExceededError') stoFull(); }
+    try { localStorage.setItem(LS, JSON.stringify({ v: 1, playlists: state.playlists, activeId: state.activeId, shuffle: state.shuffle, repeat: state.repeat, now: state.now, queue: state.queue, vol: state.vol, rate: state.rate, pos: state.pos, bk: state.bk, recent: state.recent, smart: state.smart, lp: state.lp, remOn: state.remOn, remAt: state.remAt, chg: state.chg, bkSnooze: state.bkSnooze, bad: [...bad].slice(0, 2000) })); renderSto(); } catch (e) { if (e && e.name === 'QuotaExceededError') stoFull(); }
   }
   function save() { clearTimeout(saveT); saveT = setTimeout(flush, 150); }
 
@@ -1061,6 +1085,8 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     state.now = { plId, vid };
     if (opt.ext) { state.now.q = 1; state.now.ext = opt.ext; state.now.from = opt.from || null; }
     played.add(vid);
+    state.lp[vid] = Date.now();
+    { const ks = Object.keys(state.lp); if (ks.length > 2000) ks.sort((a, b) => state.lp[a] - state.lp[b]).slice(0, ks.length - 2000).forEach(k => delete state.lp[k]); }
     state.recent = [vid, ...state.recent.filter(x => x !== vid)].slice(0, 300);
     save(); render();
     const first = !playerP;
@@ -1313,7 +1339,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     })));
   }
 
-  function render() { renderSide(); renderList(); renderSearch(); renderQueue(); renderNow(); renderControls(); renderMini(); renderSvc(); renderSh(); renderRec(); renderSto(); }
+  function render() { renderSide(); renderList(); renderSearch(); renderQueue(); renderNow(); renderControls(); renderMini(); renderSvc(); renderSh(); renderRec(); renderRem(); renderSto(); }
 
   function setTab(name) {
     for (const [k, t, p] of [['list', '#tabList', '#panelList'], ['search', '#tabSearch', '#panelSearch'], ['queue', '#tabQueue', '#panelQueue'], ['rec', '#tabRec', '#panelRec']]) {
@@ -1437,7 +1463,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   /* Ayarlar: tema, dil, ses, hız, akıllı karıştırma, uyku süresi, arama servisleri, öneri profili */
   function getSettings() {
     return {
-      theme: getTheme(), lang, vol: state.vol, rate: state.rate, smart: state.smart, sleepMin: customSleep(),
+      theme: getTheme(), lang, vol: state.vol, rate: state.rate, smart: state.smart, remind: state.remOn, sleepMin: customSleep(),
       services: { piped: cfg.piped.slice(), invidious: cfg.invidious.slice() },
       taste: { on: taste.on, a: taste.a, w: taste.w, na: taste.na, nw: taste.nw, nv: taste.nv, lk: taste.lk, ls: taste.ls, ex: taste.ex }
     };
@@ -1450,6 +1476,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (Number.isFinite(x.vol)) o.vol = Math.min(100, Math.max(0, Math.round(x.vol)));
     if (RATES.includes(x.rate)) o.rate = x.rate;
     if (typeof x.smart === 'boolean') o.smart = x.smart;
+    if (typeof x.remind === 'boolean') o.remind = x.remind;
     if (Number.isInteger(x.sleepMin) && x.sleepMin >= 0 && x.sleepMin <= 720) o.sleepMin = x.sleepMin;
     if (x.services && typeof x.services === 'object' && !Array.isArray(x.services)) {
       const sv = {};
@@ -1467,6 +1494,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (o.vol != null) { state.vol = o.vol; $('#vol').value = String(o.vol); }
     if (o.rate != null) state.rate = o.rate;
     if (o.smart != null) state.smart = o.smart;
+    if (o.remind != null) state.remOn = o.remind;
     if (o.sleepMin != null) {
       try { if (o.sleepMin) localStorage.setItem(LS_SLEEP, String(o.sleepMin)); else localStorage.removeItem(LS_SLEEP); } catch { /* yoksay */ }
     }
@@ -2959,6 +2987,82 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
  [
   "QR kod oluşturulamadı.",
   "Could not create the QR code."
+ ],
+ [
+  "Eski parça hatırlatması",
+  "Old track reminders"
+ ],
+ [
+  "Eskiyi hatırlat",
+  "Remind me of an old one"
+ ],
+ [
+  "Hatırlatma: açık",
+  "Reminders: on"
+ ],
+ [
+  "Hatırlatma: kapalı",
+  "Reminders: off"
+ ],
+ [
+  "Hatırlatma açık.",
+  "Reminders on."
+ ],
+ [
+  "Hatırlatma kapalı.",
+  "Reminders off."
+ ],
+ [
+  "Arada bir, uzun süredir dinlemediğin sevdiğin bir parçayı hatırlatır (en sık 3 günde bir)",
+  "Now and then reminds you of a favorite you haven’t played for a long time (at most once every 3 days)"
+ ],
+ [
+  "Hatırlatılacak eski parça bulunamadı.",
+  "No old track to remind you of."
+ ],
+ [
+  "Hatırlatma: “{t}” — son dinleyişin {n} gün önce.",
+  "Reminder: “{t}” — you last played it {n} days ago."
+ ],
+ [
+  "Hatırlatma: “{t}” — bir süredir dinlemedin.",
+  "Reminder: “{t}” — you haven’t played it for a while."
+ ],
+ [
+  "Önerileri çal",
+  "Play recommendations"
+ ],
+ [
+  "Öneri listesini sırayla çalar; karıştırma açıksa akıllı karıştırır",
+  "Plays the recommendation list in order; smart-shuffles it when shuffle is on"
+ ],
+ [
+  "Çalınacak öneri yok.",
+  "No recommendations to play."
+ ],
+ [
+  "Öneriler çalınıyor ({n} parça).",
+  "Playing recommendations ({n} tracks)."
+ ],
+ [
+  "Otomatik güncelle: açık",
+  "Auto-update: on"
+ ],
+ [
+  "Otomatik güncelle: kapalı",
+  "Auto-update: off"
+ ],
+ [
+  "Otomatik güncelleme açık.",
+  "Auto-update on."
+ ],
+ [
+  "Otomatik güncelleme kapalı.",
+  "Auto-update off."
+ ],
+ [
+  "Açıkken yeni dinlediklerine göre öneri listesi kendiliğinden yenilenir (en sık 3 dakikada bir)",
+  "When on, the list refreshes itself as you listen (at most every 3 minutes)"
  ]
 ];
   const EXACT = new Map(), PATS = [];
@@ -3090,6 +3194,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       on: d.on !== false, a: pickN(d.a, 80, 500), w: pickN(d.w, 150, 500), na: pickN(d.na, 60, 1), nw: pickN(d.nw, 50, 50),
       nv: (Array.isArray(d.nv) ? d.nv : []).filter(x => typeof x === 'string' && ID_RE.test(x)).slice(0, 300),
       lk, ls: (Array.isArray(d.ls) ? d.ls : []).map(x => clean(x, 60).toLowerCase()).filter(Boolean).slice(0, 20),
+      au: d.au !== false,
       ex: Number.isFinite(d.ex) ? Math.min(1, Math.max(0, Math.round(d.ex * 100) / 100)) : 0.25
     };
   }
@@ -3107,12 +3212,16 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   function decay(m, f) { for (const k of Object.keys(m)) { m[k] = Math.round(m[k] * f * 1000) / 1000; if (m[k] < 0.05) delete m[k]; } }
   function shrink(m, f) { for (const k of Object.keys(m)) { m[k] = Math.round(m[k] * f * 100) / 100; if (m[k] < 0.2) delete m[k]; } }
   const sumW = m => Object.values(m).reduce((x, y) => x + y, 0);
+  /* Kısa vadeli artış: son dinlenen 10 parçada aynı sanatçı tekrar tekrar çıkıyorsa (bir tür dinlemeye başladıysan) puanı ekstra artar. */
+  const rAuth = [];
   function learn(it, w) {
     if (!taste.on || !it) return;
     const ak = authorKey(it.author);
     if (w > 0) { decay(taste.a, 0.985); decay(taste.w, 0.985); }
-    if (ak) addW(taste.a, ak, w);
-    if (w > 0) for (const t of tokens(it.title)) addW(taste.w, t, w * 0.5);
+    let boost = 0;
+    if (w > 0 && ak) { const n = rAuth.filter(x => x === ak).length; boost = Math.min(2, 0.5 * n); rAuth.unshift(ak); rAuth.length = Math.min(rAuth.length, 10); }
+    if (ak) addW(taste.a, ak, w + boost);
+    if (w > 0) for (const t of tokens(it.title)) addW(taste.w, t, w * 0.5 + boost * 0.25);
     if (sumW(taste.a) > 300) shrink(taste.a, 0.7);
     if (sumW(taste.w) > 400) shrink(taste.w, 0.7);
     for (const [m, max] of [[taste.a, 80], [taste.w, 150]]) {
@@ -3126,7 +3235,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     const now = Date.now(), dt = lis.t ? Math.min(2000, now - lis.t) : 0; lis.t = now;
     const n = state.now; if (!n) return;
     if (lis.vid !== n.vid) { lis = { vid: n.vid, sec: 0, done: false, t: now }; return; }
-    if (playing && !lis.done) { lis.sec += dt / 1000; if (lis.sec >= 30) { lis.done = true; learn(curItem(), 1); } }
+    if (playing && !lis.done) { lis.sec += dt / 1000; if (lis.sec >= 30) { lis.done = true; learn(curItem(), 1); recAuto(); } }
   }
   function noteSkip() {
     const n = state.now;
@@ -3176,8 +3285,9 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (as[1]) seeds.push({ q: as[1], why: 'Şuna benzer: ' + as[1] });
     return seeds.filter((x, i, a) => a.findIndex(y => y.q === x.q) === i).slice(0, 3);
   }
-  async function recRefresh() {
+  async function recRefresh(silent) {
     if (R.busy) return;
+    R.stale = false;
     const P = recProfile(), seeds = recSeeds(P);
     if (!seeds.length) { R.status = 'cold'; R.items = []; R.pool = []; renderRec(); return; }
     R.busy = true; R.status = 'busy'; renderRec();
@@ -3190,7 +3300,10 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       } catch (e) { lastErr = e; if (!okAny) break; }
     }
     R.busy = false;
-    if (!okAny) { R.status = 'err'; R.msg = (lastErr && lastErr.message) || 'Arama başarısız.'; R.items = []; R.pool = []; renderRec(); return; }
+    if (!okAny) {
+      if (silent && R.items.length) { R.status = 'ok'; R.stale = true; renderRec(); return; }
+      R.status = 'err'; R.msg = (lastErr && lastErr.message) || 'Arama başarısız.'; R.items = []; R.pool = []; renderRec(); return;
+    }
     R.pool = [...seen.values()]; R.at = Date.now();
     recRank();
   }
@@ -3224,13 +3337,53 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     }
     R.items = out; R.status = out.length ? 'ok' : 'none'; renderRec();
   }
+  /* Otomatik güncelleme: yeni bir parça öğrenildiğinde sekme açıksa hemen yeniden puanlar, en sık 3 dakikada bir de yeni aday arar;
+     sekme kapalıysa bir sonraki açılışta yeniler. Başarısız olursa eski liste korunur. */
+  const REC_GAP = 3 * 60000; let recTimer = 0;
+  function recAuto() {
+    if (!taste.on || !taste.au) return;
+    R.stale = true;
+    if ($('#panelRec').hidden || R.busy) return;
+    if (R.pool.length) recRank();
+    const wait = REC_GAP - (Date.now() - R.at);
+    if (wait <= 0) { recRefresh(true); return; }
+    if (!recTimer) recTimer = setTimeout(() => { recTimer = 0; if (R.stale && taste.au && !$('#panelRec').hidden) recRefresh(true); }, wait + 50);
+  }
   function recOpen() {
     if (R.busy) return;
-    if (R.status === 'idle' || R.status === 'cold' || (R.at && Date.now() - R.at > 30 * 60000)) recRefresh();
+    if (R.status === 'idle' || R.status === 'cold' || (R.at && Date.now() - R.at > 30 * 60000) || (R.stale && taste.au && Date.now() - R.at >= REC_GAP)) recRefresh(true);
   }
   function playExt(it) {
     const now = state.now, pl = (now && plById(now.plId)) || active();
     playVid(pl.id, it.id, { ext: { id: it.id, title: it.title, author: it.author || '' }, from: now ? (now.q ? now.from : now.vid) : null });
+  }
+  /* Öneri listesini sırayla çalar. Karıştırma açıksa sırayı karıştırır (akıllı karıştırma açıksa art arda aynı sanatçı gelmez; çok parçası olan sanatçı sona yığılmaz).
+     Parçalar sıranın başına konur, mevcut sıran arkada kalır; ilki hemen çalar. */
+  function recOrder(list) {
+    const a = list.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    if (!state.smart) return a;
+    const out = [];
+    while (a.length) {
+      const prev = out.length ? authorKey(out[out.length - 1].author) : '';
+      const cnt = new Map(); a.forEach(x => { const ak = authorKey(x.author); cnt.set(ak, (cnt.get(ak) || 0) + 1); });
+      let k = -1, best = 0;
+      a.forEach((x, i) => { const ak = authorKey(x.author), c = cnt.get(ak) || 0; if ((!prev || ak !== prev) && c > best) { best = c; k = i; } });
+      if (k < 0) k = 0;
+      out.push(a.splice(k, 1)[0]);
+    }
+    return out;
+  }
+  function playRecs() {
+    let list = R.items.filter(x => !bad.has(x.id));
+    if (!list.length) { toast('Çalınacak öneri yok.', 'warn'); return; }
+    if (state.shuffle) list = recOrder(list);
+    const ids = new Set(list.map(x => x.id));
+    const rest = state.queue.filter(x => !ids.has(x.id));
+    state.queue = [...list.map(x => ({ id: x.id, title: x.title, author: x.author || '' })), ...rest].slice(0, 200);
+    save(); renderQueue();
+    toast('Öneriler çalınıyor (' + Math.min(list.length, 200) + ' parça).', 'ok');
+    errStreak = 0; playQueued(0);
   }
   function dismissRec(it, artist) {
     const ak = authorKey(it.author);
@@ -3271,7 +3424,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       const ks = Object.keys(taste.lk); if (ks.length > 300) delete taste.lk[ks[0]];
       toast(v > 0 ? 'Beğenildi: öneriler buna göre güncellenecek.' : 'Beğenilmedi: bu parça ve benzerleri azaltılacak.', 'ok');
     }
-    saveTaste(); renderLike(); if (R.pool.length) recRank();
+    saveTaste(); renderLike(); if (R.pool.length) recRank(); recAuto();
     if (v < 0 && taste.lk[it.id] === -1) { lis.done = true; go(1); }
   }
   function renderLike() {
@@ -3283,6 +3436,9 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#btnRecOn').textContent = 'Öğrenme: ' + (taste.on ? 'açık' : 'kapalı');
     $('#btnRecOn').setAttribute('aria-pressed', String(taste.on));
     $('#btnRecRefresh').disabled = R.busy;
+    $('#btnRecPlay').disabled = !R.items.length;
+    $('#btnRecAuto').textContent = 'Otomatik güncelle: ' + (taste.au ? 'açık' : 'kapalı');
+    $('#btnRecAuto').setAttribute('aria-pressed', String(taste.au));
     if (document.activeElement !== $('#recEx')) $('#recEx').value = String(Math.round(taste.ex * 100));
     const msg = { busy: 'Öneriler hazırlanıyor…', cold: 'Öneri için biraz veri lazım: birkaç parça dinle ya da listene parça ekle.', none: 'Yeni öneri bulunamadı. Biraz daha dinleyip yenile.', err: R.msg }[R.status];
     st.hidden = !msg; st.textContent = msg || ''; st.classList.toggle('err', R.status === 'err');
@@ -3291,6 +3447,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       why: it.why, how: it.how,
       main: () => playExt(it),
       acts: [
+        ibtn('play', 'Çal', () => playExt(it)),
         ibtn('queue', 'Sıraya ekle', () => addQueue(it)),
         pl.items.some(x => x.id === it.id) ? ibtn('check', 'Listede', () => {}, { disabled: true })
           : ibtn('plus', 'Listeye ekle', () => { addItems(active(), [it]); learn(it, 1); toast('Eklendi: ' + it.title, 'ok'); }),
@@ -3517,6 +3674,45 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     }, 'image/png');
   }
 
+  /* Eski parça hatırlatması: listendeki, 30 günden uzun süredir çalmadığın (ya da son çalınanlar arasında olmayan) parçalardan
+     sevdiğin sanatçıya, beğenilene ve uzun süredir dinlenmeyene ağırlık vererek birini seçer; en sık 3 günde bir, bir kart gösterir. */
+  const REM_DAYS = 30, REM_GAP = 3 * 864e5;
+  let remItem = null, remShown = false;
+  function remPick() {
+    const now = Date.now(), P = recProfile(), recent = new Set(state.recent);
+    const skip = new Set([...state.recent.slice(0, 30), ...state.queue.map(x => x.id), ...taste.nv]);
+    let best = null;
+    for (const p of state.playlists) for (const it of p.items) {
+      if (bad.has(it.id) || skip.has(it.id) || taste.lk[it.id] === -1) continue;
+      const lp = state.lp[it.id], days = lp ? (now - lp) / 864e5 : null;
+      if (lp ? days < REM_DAYS : recent.has(it.id)) continue;
+      const ak = authorKey(it.author), a = ak && P.A.has(ak) ? P.A.get(ak) / P.maxA : 0;
+      const w = 0.4 * a + 0.3 * (taste.lk[it.id] === 1 ? 1 : 0) + 0.3 * (lp ? Math.min(1, days / 180) : 0.4) + 0.2 * Math.random();
+      if (!best || w > best.w) best = { it, pl: p, days: lp ? Math.round(days) : null, w };
+    }
+    return best;
+  }
+  function remHide() { $('#remBar').hidden = true; remItem = null; }
+  function remShow(force) {
+    const r = remPick();
+    if (!r) { if (force) toast('Hatırlatılacak eski parça bulunamadı.', 'warn'); return false; }
+    remItem = r; remShown = true; state.remAt = Date.now(); save();
+    $('#remText').textContent = 'Hatırlatma: “' + r.it.title + '” — ' + (r.days != null ? 'son dinleyişin ' + r.days + ' gün önce.' : 'bir süredir dinlemedin.');
+    $('#remBar').hidden = false;
+    return true;
+  }
+  function remCheck() {
+    if (!state.remOn || remShown || document.hidden || playing || !$('#bkBar').hidden) return;
+    if (Date.now() - state.remAt < REM_GAP) return;
+    remShow(false);
+  }
+  function renderRem() {
+    const b = $('#btnRem');
+    b.textContent = 'Hatırlatma: ' + (state.remOn ? 'açık' : 'kapalı');
+    b.setAttribute('aria-pressed', String(state.remOn));
+    if (!state.remOn) remHide();
+  }
+
   /* ——— Olaylar ——— */
   function init() {
     try { localStorage.removeItem('Web_Music_Player_by_SoftArchX.apikey'); } catch { /* yoksay */ }
@@ -3546,6 +3742,8 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#tabSearch').addEventListener('click', () => setTab('search'));
     $('#tabQueue').addEventListener('click', () => setTab('queue'));
     $('#tabRec').addEventListener('click', () => setTab('rec'));
+    $('#btnRecPlay').addEventListener('click', playRecs);
+    $('#btnRecAuto').addEventListener('click', () => { taste.au = !taste.au; saveTaste(); renderRec(); toast(taste.au ? 'Otomatik güncelleme açık.' : 'Otomatik güncelleme kapalı.', 'ok'); if (taste.au && R.stale) recAuto(); });
     $('#btnRecRefresh').addEventListener('click', () => { R.status = 'idle'; recRefresh(); });
     $('#btnRecOn').addEventListener('click', () => { taste.on = !taste.on; saveTaste(); renderRec(); toast(taste.on ? 'Öğrenme açık.' : 'Öğrenme kapalı.', 'ok'); });
     $('#btnRecReset').addEventListener('click', async () => {
@@ -3564,6 +3762,12 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#btnDislike').addEventListener('click', () => rateCur(-1));
     $('#recEx').addEventListener('input', e => { taste.ex = +e.target.value / 100; });
     $('#recEx').addEventListener('change', () => { saveTaste(); if (R.pool.length) recRank(); });
+    $('#remPlay').addEventListener('click', () => { const r = remItem; remHide(); if (r) { errStreak = 0; bad.delete(r.it.id); playVid(r.pl.id, r.it.id); } });
+    $('#remQueue').addEventListener('click', () => { const r = remItem; remHide(); if (r) addQueue(r.it); });
+    $('#remLater').addEventListener('click', () => { remHide(); state.remAt = Date.now() - REM_GAP + 864e5; save(); });
+    $('#remClose').addEventListener('click', remHide);
+    $('#btnRemNow').addEventListener('click', () => remShow(true));
+    $('#btnRem').addEventListener('click', () => { state.remOn = !state.remOn; save(); renderRem(); toast(state.remOn ? 'Hatırlatma açık.' : 'Hatırlatma kapalı.', 'ok'); });
     $('#btnLang').addEventListener('click', () => { setLang(lang === 'tr' ? 'en' : 'tr'); toast(lang === 'en' ? 'Language: English' : 'Dil: Türkçe', 'ok'); });
     $('#btnShare').addEventListener('click', sharePlaylist);
     $('#btnClean').addEventListener('click', cleanBad);
@@ -3571,7 +3775,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#btnSvcCheck').addEventListener('click', checkServices);
     $('#bkNow').addEventListener('click', () => { exportData(); toast('Yedek dosyası indirildi.', 'ok'); });
     $('#bkLater').addEventListener('click', () => { state.bkSnooze = Date.now() + 864e5; save(); backupCheck(); });
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) backupCheck(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) { backupCheck(); remCheck(); } });
     $('#btnSvcEdit').addEventListener('click', toggleSvcEdit);
     $('#svcAdd').addEventListener('submit', addService);
     $('#btnSvcReset').addEventListener('click', resetServices);
@@ -3683,6 +3887,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     }
     window.addEventListener('pagehide', () => { savePos(); flush(); });
     if (!state.bk) state.bk = Date.now();
+    if (!state.remAt) state.remAt = Date.now();
     $('#vol').value = String(state.vol);
     applyTheme(getTheme()); renderRate(); renderSleep(); renderSmart();
     setInterval(tick, 500);
@@ -3692,6 +3897,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     render();
     startLang();
     renderSto(true);
+    setTimeout(remCheck, 6000);
     backupCheck();
     checkShared();
     window.addEventListener('hashchange', checkShared);

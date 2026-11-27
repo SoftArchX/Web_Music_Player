@@ -207,6 +207,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
 .dlg-act{display:flex;gap:8px;justify-content:flex-start;flex-direction:row-reverse}
 #toasts{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:50;width:min(480px,92vw);pointer-events:none}
 .toast{background:var(--raise);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:14px}
+.toast .toast-act{pointer-events:auto;margin-left:10px;background:transparent;border:1px solid var(--line);color:var(--accent);border-radius:8px;padding:3px 10px;font-weight:600}
 .toast.err{border-left-color:var(--danger)}
 .toast.ok{border-left-color:var(--ok)}
 
@@ -259,7 +260,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
         <button class="btn small" type="button" id="btnImport">İçe aktar</button>
       </div>
       <button class="sto" type="button" id="btnSto" title="Depolama kullanımı"><span class="sto-bar"><i id="stoFill"></i></span><span id="stoText"></span></button>
-      <p class="keys">Kısayollar: N sonraki, P önceki, K oynat/duraklat, S karıştır, R tekrar, M ses, F tam ekran, ←/→ 5 sn, / arama kutusu, ? yardım.</p>
+      <p class="keys">Kısayollar: N sonraki, P önceki, K oynat/duraklat, S karıştır, R tekrar, M ses, F tam ekran, ←/→ 5 sn, / arama kutusu, ? yardım, Ctrl+Z geri al.</p>
       <input id="fileIn" type="file" accept="application/json,.json" hidden>
     </div>
   </aside>
@@ -306,10 +307,12 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       <button type="button" role="tab" id="tabSearch" aria-selected="false" aria-controls="panelSearch">Arama</button>
       <button type="button" role="tab" id="tabQueue" aria-selected="false" aria-controls="panelQueue">Sıra</button>
       <button type="button" role="tab" id="tabRec" aria-selected="false" aria-controls="panelRec">Öneri</button>
+      <button type="button" role="tab" id="tabSmart" aria-selected="false" aria-controls="panelSmart">Akıllı</button>
     </div>
     <div class="panel" id="panelList" role="tabpanel" aria-labelledby="tabList">
       <div class="pl-head">
         <h2 id="plTitle"></h2>
+        <button class="ib" type="button" id="btnUndo" aria-label="Geri al" title="Geri al (Ctrl+Z)" disabled></button>
         <button class="ib" type="button" id="btnClean" aria-label="Oynatılamayanları kaldır" title="Oynatılamayanları kaldır"></button>
         <button class="ib" type="button" id="btnShare" aria-label="Paylaşım linki oluştur" title="Paylaşım linki oluştur"></button>
         <button class="ib" type="button" id="btnQR" aria-label="QR kod ile paylaş" title="QR kod ile paylaş"></button>
@@ -353,10 +356,30 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       </div>
       <ul class="rows" id="qItems"></ul>
     </div>
+    <div class="panel" id="panelSmart" role="tabpanel" aria-labelledby="tabSmart" hidden>
+      <div class="srcbar" id="smKinds">
+        <span class="srcbtns" style="flex-wrap:wrap">
+          <button class="btn small" type="button" data-k="top" aria-pressed="true">En çok dinlenen</button>
+          <button class="btn small" type="button" data-k="recent" aria-pressed="false">Son 30 gün</button>
+          <button class="btn small" type="button" data-k="never" aria-pressed="false">Hiç dinlenmemiş</button>
+          <button class="btn small" type="button" data-k="year" aria-pressed="false">Geçen yıl bu günler</button>
+        </span>
+      </div>
+      <p class="hint" id="smNote"></p>
+      <div class="srcbar">
+        <span id="smCount"></span>
+        <span class="srcbtns">
+          <button class="btn small primary" type="button" id="smPlay">Hepsini çal</button>
+          <button class="btn small" type="button" id="smSave">Liste olarak kaydet</button>
+        </span>
+      </div>
+      <ul class="rows" id="smItems"></ul>
+    </div>
     <div class="panel" id="panelRec" role="tabpanel" aria-labelledby="tabRec" hidden>
       <div class="srcbar">
         <span id="recInfo">Sana özel öneriler</span>
         <span class="srcbtns">
+          <button class="btn small" type="button" id="btnRadio" aria-pressed="false" title="Liste ve sıra bitince öneriyle kendiliğinden devam eder">Radyo: kapalı</button>
           <button class="btn small primary" type="button" id="btnRecPlay" title="Öneri listesini sırayla çalar; karıştırma açıksa akıllı karıştırır">Önerileri çal</button>
           <button class="btn small" type="button" id="btnRecRefresh">Yenile</button>
           <button class="btn small" type="button" id="btnRecAuto" aria-pressed="true" title="Açıkken yeni dinlediklerine göre öneri listesi kendiliğinden yenilenir (en sık 3 dakikada bir)">Otomatik güncelle: açık</button>
@@ -495,6 +518,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     theme: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>',
     share: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v5h14v-5"/>',
     qr: '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/>',
+    undo: '<path d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
     like: '<path d="M7 11v9H4v-9zM7 11l4-7c1.7 0 2.6 1.1 2.4 2.5L13 9h5.4a2 2 0 0 1 2 2.3l-1.1 6.4A2 2 0 0 1 17.3 20H7"/>'
   };
   function icon(name) {
@@ -508,8 +532,9 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   const ibtn = (name, label, fn, extra) =>
     el('button', Object.assign({ class: 'ib', type: 'button', 'aria-label': label, title: label, onclick: fn }, extra || {}), icon(name));
 
-  function toast(msg, kind, ms) {
+  function toast(msg, kind, ms, act) {
     const t = el('div', { class: 'toast ' + (kind || '') }, msg);
+    if (act) t.append(el('button', { type: 'button', class: 'toast-act', onclick: () => { t.remove(); act.fn(); } }, act.label));
     $('#toasts').append(t);
     setTimeout(() => t.remove(), ms || 4200);
   }
@@ -559,7 +584,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   /* ——— Durum ——— */
   let state = {
     playlists: [{ id: uid(), name: 'Kitaplık', items: [] }],
-    activeId: null, shuffle: false, repeat: 'off', now: null, queue: [], vol: 100, rate: 1, pos: null, bk: 0, recent: [], smart: true, chg: 0, bkSnooze: 0, lp: {}, remOn: true, remAt: 0
+    activeId: null, shuffle: false, repeat: 'off', now: null, queue: [], vol: 100, rate: 1, pos: null, bk: 0, recent: [], smart: true, chg: 0, bkSnooze: 0, lp: {}, remOn: true, remAt: 0, radio: false, ph: []
   };
   let playing = false, hist = [], errStreak = 0;
   const played = new Set(), bad = new Set();
@@ -611,6 +636,8 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
         if (d.smart === false) state.smart = false;
         if (d.lp && typeof d.lp === 'object' && !Array.isArray(d.lp)) Object.entries(d.lp).slice(0, 4000).forEach(([k, v]) => { if (ID_RE.test(k) && Number.isFinite(v) && v > 0) state.lp[k] = v; });
         if (d.remOn === false) state.remOn = false;
+        if (d.radio === true) state.radio = true;
+        if (Array.isArray(d.ph)) state.ph = d.ph.filter(x => Array.isArray(x) && Number.isFinite(x[0]) && x[0] > 0 && typeof x[1] === 'string' && ID_RE.test(x[1])).slice(-2500).map(x => [x[0], x[1]]);
         if (Number.isFinite(d.remAt) && d.remAt > 0) state.remAt = d.remAt;
         if (Number.isFinite(d.chg) && d.chg > 0) state.chg = Math.floor(d.chg);
         if (Number.isFinite(d.bkSnooze) && d.bkSnooze > 0) state.bkSnooze = d.bkSnooze;
@@ -623,7 +650,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
   let saveT = 0;
   function flush() {
-    try { localStorage.setItem(LS, JSON.stringify({ v: 1, playlists: state.playlists, activeId: state.activeId, shuffle: state.shuffle, repeat: state.repeat, now: state.now, queue: state.queue, vol: state.vol, rate: state.rate, pos: state.pos, bk: state.bk, recent: state.recent, smart: state.smart, lp: state.lp, remOn: state.remOn, remAt: state.remAt, chg: state.chg, bkSnooze: state.bkSnooze, bad: [...bad].slice(0, 2000) })); renderSto(); } catch (e) { if (e && e.name === 'QuotaExceededError') stoFull(); }
+    try { localStorage.setItem(LS, JSON.stringify({ v: 1, playlists: state.playlists, activeId: state.activeId, shuffle: state.shuffle, repeat: state.repeat, now: state.now, queue: state.queue, vol: state.vol, rate: state.rate, pos: state.pos, bk: state.bk, recent: state.recent, smart: state.smart, lp: state.lp, remOn: state.remOn, remAt: state.remAt, radio: state.radio, ph: state.ph, chg: state.chg, bkSnooze: state.bkSnooze, bad: [...bad].slice(0, 2000) })); renderSto(); } catch (e) { if (e && e.name === 'QuotaExceededError') stoFull(); }
   }
   function save() { clearTimeout(saveT); saveT = setTimeout(flush, 150); }
 
@@ -957,6 +984,17 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     searches = [q, ...searches.filter(x => x.toLowerCase() !== q.toLowerCase())].slice(0, 20);
     saveSh(); renderSh();
   }
+  /* Aramalar da zayıf bir sinyaldir: aranan sanatçı/kelimeler hafifçe artar. Aynı arama bir kez sayılır; yalnızca Öğrenme açıkken, cihazda kalır. */
+  function learnSearch(q, items) {
+    q = clean(q, 100);
+    if (!taste.on || !q || /https?:|youtu/i.test(q) || searches.some(x => x.toLowerCase() === q.toLowerCase())) return;
+    const qk = q.toLowerCase();
+    const authors = new Set(); state.playlists.forEach(p => p.items.forEach(x => { const ak = authorKey(x.author); if (ak) authors.add(ak); }));
+    items.slice(0, 10).forEach(x => { const ak = authorKey(x.author); if (ak) authors.add(ak); });
+    for (const ak of authors) if (ak.length >= 3 && qk.includes(ak)) addW(taste.a, ak, 0.3);
+    tokens(q).slice(0, 4).forEach(t => addW(taste.w, t, 0.2));
+    saveTaste(); recAuto();
+  }
   function runSearch(q) { $('#omni').value = q; submit('play'); }
   function renderSh() {
     $('#shBox').hidden = !searches.length;
@@ -973,12 +1011,47 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     try {
       S.items = await searchFree(q);
       S.status = S.items.length ? 'ok' : 'none';
-      if (S.items.length) addSearch(q);
+      if (S.items.length) { learnSearch(q, S.items); addSearch(q); }
     } catch (e) {
       S.status = 'err'; S.msg = e.name === 'AbortError' ? 'İstek zaman aşımına uğradı.' : (e.message || 'Arama başarısız.');
     }
     renderSearch();
   }
+
+  /* ——— Geri al / yinele ———
+     Listeleri, sırayı ve etkin listeyi kapsayan anlık görüntüler tutar (en çok 30). Ctrl+Z geri alır, Ctrl+Y / Ctrl+Shift+Z yineler. */
+  const undoS = [], redoS = []; let undoAt = 0;
+  const snapNow = () => JSON.stringify({ p: state.playlists, q: state.queue, a: state.activeId });
+  function snap(label) {
+    const t = Date.now();
+    if (undoS.length && t - undoAt < 500) { undoAt = t; return; }
+    undoAt = t; undoS.push({ s: snapNow(), label }); if (undoS.length > 30) undoS.shift();
+    redoS.length = 0; renderUndo();
+  }
+  function restoreSnap(x) {
+    const d = JSON.parse(x.s);
+    state.playlists = d.p; state.queue = d.q;
+    state.activeId = state.playlists.some(p => p.id === d.a) ? d.a : state.playlists[0].id;
+    const n = state.now;
+    undoAt = 0; bump(1);
+    if (n && !n.q && !plById(n.plId)) stopAll(); else render();
+  }
+  function undo() {
+    const x = undoS.pop(); if (!x) { toast('Geri alınacak işlem yok.', 'warn'); return; }
+    redoS.push({ s: snapNow(), label: x.label }); restoreSnap(x); renderUndo();
+    toast('Geri alındı: ' + x.label + '.', 'ok');
+  }
+  function redo() {
+    const x = redoS.pop(); if (!x) { toast('Yinelenecek işlem yok.', 'warn'); return; }
+    undoS.push({ s: snapNow(), label: x.label }); restoreSnap(x); renderUndo();
+    toast('Yinelendi: ' + x.label + '.', 'ok');
+  }
+  function renderUndo() {
+    const b = $('#btnUndo'); if (!b) return;
+    b.disabled = !undoS.length;
+    b.title = b.ariaLabel = undoS.length ? 'Geri al: ' + undoS[undoS.length - 1].label + ' (Ctrl+Z)' : 'Geri al (Ctrl+Z)';
+  }
+  const undoAct = { label: 'Geri al', fn: undo };
 
   /* ——— Liste işlemleri ——— */
   function newPlaylist(name) {
@@ -988,6 +1061,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
   function addItems(pl, items) {
     const have = new Set(pl.items.map(i => i.id));
+    if (pl.items.length < 2000 && items.some(it => ID_RE.test(it.id) && !have.has(it.id))) snap('Ekleme');
     let n = 0;
     for (const it of items) {
       if (!ID_RE.test(it.id) || have.has(it.id) || pl.items.length >= 2000) continue;
@@ -999,6 +1073,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   function move(from, to) {
     const pl = active();
     if (from === to || from < 0 || to < 0 || from >= pl.items.length || to >= pl.items.length) return;
+    snap('Sıralama');
     const [x] = pl.items.splice(from, 1);
     pl.items.splice(to, 0, x);
     save(); render();
@@ -1014,6 +1089,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   function moveQ(from, to) {
     const q = state.queue;
     if (from === to || to < 0 || to >= q.length) return;
+    snap('Sıralama');
     const [x] = q.splice(from, 1); q.splice(to, 0, x);
     save(); renderQueue();
   }
@@ -1033,8 +1109,10 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   function removeItem(pl, idx) {
     const it = pl.items[idx]; if (!it) return;
     const wasCur = state.now && state.now.plId === pl.id && state.now.vid === it.id;
+    snap('Silme');
     pl.items.splice(idx, 1);
     bump(1);
+    toast('Listeden çıkarıldı: ' + it.title, 'ok', 7000, undoAct);
     if (wasCur) {
       const n = pl.items.length;
       if (n) playVid(pl.id, pl.items[Math.min(idx, n - 1)].id, { back: true });
@@ -1155,7 +1233,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (dir > 0 && state.queue.length) { playQueued(0); return; }
     if (!now) { const pl = active(); if (pl.items[0]) playVid(pl.id, pl.items[0].id); return; }
     const pl = plById(now.plId);
-    if (!pl || !pl.items.length) { stopAll(); return; }
+    if (!pl || !pl.items.length) { if (auto && state.radio) { radioNext(); return; } stopAll(); return; }
     const base = now.q ? now.from : now.vid;
     const i = pl.items.findIndex(x => x.id === base);
     if (dir < 0) {
@@ -1167,7 +1245,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       return;
     }
     const nxt = pickNext(pl, i, !!auto);
-    if (!nxt) { playing = false; renderControls(); return; }
+    if (!nxt) { if (auto && state.radio) { radioNext(); return; } playing = false; renderControls(); return; }
     playVid(pl.id, nxt.id);
   }
 
@@ -1334,19 +1412,20 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       acts: [
         ibtn('up', 'Yukarı taşı', () => moveQ(i, i - 1), { disabled: i === 0 }),
         ibtn('down', 'Aşağı taşı', () => moveQ(i, i + 1), { disabled: i === q.length - 1 }),
-        ibtn('close', 'Sıradan çıkar', () => { q.splice(i, 1); save(); renderQueue(); })
+        ibtn('close', 'Sıradan çıkar', () => { snap('Sıradan çıkarma'); q.splice(i, 1); save(); renderQueue(); })
       ]
     })));
   }
 
-  function render() { renderSide(); renderList(); renderSearch(); renderQueue(); renderNow(); renderControls(); renderMini(); renderSvc(); renderSh(); renderRec(); renderRem(); renderSto(); }
+  function render() { renderSide(); renderList(); renderSearch(); renderQueue(); renderNow(); renderControls(); renderMini(); renderSvc(); renderSh(); renderRec(); renderRem(); renderSto(); renderUndo(); if (!$('#panelSmart').hidden) renderSm(); }
 
   function setTab(name) {
-    for (const [k, t, p] of [['list', '#tabList', '#panelList'], ['search', '#tabSearch', '#panelSearch'], ['queue', '#tabQueue', '#panelQueue'], ['rec', '#tabRec', '#panelRec']]) {
+    for (const [k, t, p] of [['list', '#tabList', '#panelList'], ['search', '#tabSearch', '#panelSearch'], ['queue', '#tabQueue', '#panelQueue'], ['rec', '#tabRec', '#panelRec'], ['smart', '#tabSmart', '#panelSmart']]) {
       $(t).setAttribute('aria-selected', String(k === name));
       $(p).hidden = k !== name;
     }
     if (name === 'rec') recOpen();
+    if (name === 'smart') renderSm();
   }
 
   /* ——— Eylemler ——— */
@@ -1463,9 +1542,9 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   /* Ayarlar: tema, dil, ses, hız, akıllı karıştırma, uyku süresi, arama servisleri, öneri profili */
   function getSettings() {
     return {
-      theme: getTheme(), lang, vol: state.vol, rate: state.rate, smart: state.smart, remind: state.remOn, sleepMin: customSleep(),
+      theme: getTheme(), lang, vol: state.vol, rate: state.rate, smart: state.smart, remind: state.remOn, radio: state.radio, sleepMin: customSleep(),
       services: { piped: cfg.piped.slice(), invidious: cfg.invidious.slice() },
-      taste: { on: taste.on, a: taste.a, w: taste.w, na: taste.na, nw: taste.nw, nv: taste.nv, lk: taste.lk, ls: taste.ls, ex: taste.ex }
+      taste: { on: taste.on, au: taste.au, a: taste.a, w: taste.w, na: taste.na, nw: taste.nw, nv: taste.nv, lk: taste.lk, ls: taste.ls, ex: taste.ex }
     };
   }
   function sanitizeSettings(x) {
@@ -1477,6 +1556,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (RATES.includes(x.rate)) o.rate = x.rate;
     if (typeof x.smart === 'boolean') o.smart = x.smart;
     if (typeof x.remind === 'boolean') o.remind = x.remind;
+    if (typeof x.radio === 'boolean') o.radio = x.radio;
     if (Number.isInteger(x.sleepMin) && x.sleepMin >= 0 && x.sleepMin <= 720) o.sleepMin = x.sleepMin;
     if (x.services && typeof x.services === 'object' && !Array.isArray(x.services)) {
       const sv = {};
@@ -1495,6 +1575,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (o.rate != null) state.rate = o.rate;
     if (o.smart != null) state.smart = o.smart;
     if (o.remind != null) state.remOn = o.remind;
+    if (o.radio != null) state.radio = o.radio;
     if (o.sleepMin != null) {
       try { if (o.sleepMin) localStorage.setItem(LS_SLEEP, String(o.sleepMin)); else localStorage.removeItem(LS_SLEEP); } catch { /* yoksay */ }
     }
@@ -1525,6 +1606,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       if (!pls.length && !st) throw new Error('boş');
     } catch { toast('Dosya okunamadı: geçerli bir Web Music Player by SoftArchX dışa aktarma dosyası değil.', 'err'); return; }
     if (pls.length) {
+      snap('İçe aktarma');
       pls.forEach(p => { p.id = uid(); state.playlists.push(p); });
       bump(pls.reduce((a, p) => a + p.items.length, 0) || 1);
       state.activeId = pls[0].id;
@@ -1636,7 +1718,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   function showHelp() {
     return ask({
       title: 'Klavye kısayolları',
-      message: 'N: sonraki\nP: önceki\nK: oynat / duraklat\nS: karıştır\nR: tekrar\nM: sesi kapat / aç\nF: tam ekran\n← →: 5 sn geri / ileri\n/: arama kutusu\n?: bu pencere',
+      message: 'N: sonraki\nP: önceki\nK: oynat / duraklat\nS: karıştır\nR: tekrar\nM: sesi kapat / aç\nF: tam ekran\n← →: 5 sn geri / ileri\n/: arama kutusu\nCtrl+Z: geri al (Ctrl+Y: yinele)\n?: bu pencere',
       ok: 'Tamam', cancel: 'Kapat'
     });
   }
@@ -1647,11 +1729,12 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     const yes = await ask({ title: 'Oynatılamayanları kaldır', message: dead.length + ' video listeden çıkarılacak (silinmiş, özel ya da gömülmesi kapalı olanlar).', ok: 'Kaldır', danger: true });
     if (!yes) return;
     const n = state.now;
+    snap('Temizleme');
     pl.items = pl.items.filter(i => !bad.has(i.id));
     dead.forEach(i => bad.delete(i.id));
     bump(dead.length);
     if (n && !n.q && n.plId === pl.id && dead.some(i => i.id === n.vid)) stopAll(); else { save(); render(); }
-    toast(dead.length + ' video kaldırıldı.', 'ok');
+    toast(dead.length + ' video kaldırıldı.', 'ok', 7000, undoAct);
   }
   /* Yedek önerisi: son yedekten bu yana 25 değişiklik olduysa ya da 7 gün geçtiyse kalıcı bir kutu çıkar.
      Tarayıcılar sayfa kapanırken kendiliğinden dosya indirmeye izin vermez; bu yüzden öneri açıkken tek tıkla indirilir. */
@@ -1728,6 +1811,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       options: [...others.map(p => ({ v: p.id, t: p.name + ' (' + p.items.length + ')' })), { v: '__new', t: '+ Yeni liste…' }]
     });
     if (!r) return;
+    snap(r.mode === 'move' ? 'Taşıma' : 'Kopyalama');
     let tgt;
     if (r.v === '__new') {
       const n = await ask({ title: 'Yeni çalma listesi', input: true, placeholder: 'Liste adı', ok: 'Oluştur' });
@@ -1849,8 +1933,8 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   "Import"
  ],
  [
-  "Kısayollar: N sonraki, P önceki, K oynat/duraklat, S karıştır, R tekrar, M ses, F tam ekran, ←/→ 5 sn, / arama kutusu, ? yardım.",
-  "Shortcuts: N next, P previous, K play/pause, S shuffle, R repeat, M mute, F fullscreen, ←/→ 5 s, / search box, ? help."
+  "Kısayollar: N sonraki, P önceki, K oynat/duraklat, S karıştır, R tekrar, M ses, F tam ekran, ←/→ 5 sn, / arama kutusu, ? yardım, Ctrl+Z geri al.",
+  "Shortcuts: N next, P previous, K play/pause, S shuffle, R repeat, M mute, F fullscreen, ←/→ 5 s, / search box, ? help, Ctrl+Z undo."
  ],
  [
   "Kitaplık",
@@ -3063,6 +3147,202 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
  [
   "Açıkken yeni dinlediklerine göre öneri listesi kendiliğinden yenilenir (en sık 3 dakikada bir)",
   "When on, the list refreshes itself as you listen (at most every 3 minutes)"
+ ],
+ [
+  "Geri al",
+  "Undo"
+ ],
+ [
+  "Geri al (Ctrl+Z)",
+  "Undo (Ctrl+Z)"
+ ],
+ [
+  "Geri al: {x} (Ctrl+Z)",
+  "Undo: {x} (Ctrl+Z)"
+ ],
+ [
+  "Yinele",
+  "Redo"
+ ],
+ [
+  "Geri alınacak işlem yok.",
+  "Nothing to undo."
+ ],
+ [
+  "Yinelenecek işlem yok.",
+  "Nothing to redo."
+ ],
+ [
+  "Geri alındı: {x}.",
+  "Undone: {x}."
+ ],
+ [
+  "Yinelendi: {x}.",
+  "Redone: {x}."
+ ],
+ [
+  "Silme",
+  "Removal"
+ ],
+ [
+  "Sıralama",
+  "Reordering"
+ ],
+ [
+  "Sıradan çıkarma",
+  "Queue removal"
+ ],
+ [
+  "Sıra temizleme",
+  "Clearing the queue"
+ ],
+ [
+  "Liste silme",
+  "Deleting the list"
+ ],
+ [
+  "Temizleme",
+  "Cleanup"
+ ],
+ [
+  "Yeniden adlandırma",
+  "Renaming"
+ ],
+ [
+  "Taşıma",
+  "Move"
+ ],
+ [
+  "Kopyalama",
+  "Copy"
+ ],
+ [
+  "İçe aktarma",
+  "Import"
+ ],
+ [
+  "Ekleme",
+  "Adding"
+ ],
+ [
+  "Sıra değişikliği",
+  "Queue change"
+ ],
+ [
+  "Liste oluşturma",
+  "Creating a list"
+ ],
+ [
+  "Listeden çıkarıldı: {t}",
+  "Removed from the list: {t}"
+ ],
+ [
+  "Sıra temizlendi.",
+  "Queue cleared."
+ ],
+ [
+  "Liste silindi: {t}",
+  "List deleted: {t}"
+ ],
+ [
+  "Ctrl+Z: geri al (Ctrl+Y: yinele)",
+  "Ctrl+Z: undo (Ctrl+Y: redo)"
+ ],
+ [
+  "Radyo: açık",
+  "Radio: on"
+ ],
+ [
+  "Radyo: kapalı",
+  "Radio: off"
+ ],
+ [
+  "Radyo açık.",
+  "Radio on."
+ ],
+ [
+  "Radyo kapalı.",
+  "Radio off."
+ ],
+ [
+  "Liste ve sıra bitince öneriyle kendiliğinden devam eder",
+  "When the list and queue end, keeps playing recommendations by itself"
+ ],
+ [
+  "Radyo: öneri bulunamadı.",
+  "Radio: no recommendation found."
+ ],
+ [
+  "Akıllı",
+  "Smart"
+ ],
+ [
+  "En çok dinlenen",
+  "Most played"
+ ],
+ [
+  "Son 30 gün",
+  "Last 30 days"
+ ],
+ [
+  "Hiç dinlenmemiş",
+  "Never played"
+ ],
+ [
+  "Geçen yıl bu günler",
+  "This time last year"
+ ],
+ [
+  "Hepsini çal",
+  "Play all"
+ ],
+ [
+  "Liste olarak kaydet",
+  "Save as list"
+ ],
+ [
+  "Listelerindeki parçalardan en çok dinlediklerin (30 sn’den uzun dinlemeler sayılır).",
+  "The tracks from your lists that you play most (plays over 30 s count)."
+ ],
+ [
+  "Son 30 günde dinlediklerin.",
+  "What you played in the last 30 days."
+ ],
+ [
+  "Listelerinde olup hiç dinlemediğin parçalar.",
+  "Tracks in your lists that you have never played."
+ ],
+ [
+  "Geçen yıl bu günlerde (±7 gün) dinlediklerin.",
+  "What you played around this date last year (±7 days)."
+ ],
+ [
+  "Henüz gösterilecek parça yok. Dinleme geçmişi yalnızca Öğrenme açıkken tutulur ve bir parça 30 sn çalınca sayılır.",
+  "No tracks to show yet. Play history is kept only while learning is on and a track counts after 30 s of playback."
+ ],
+ [
+  "{n} kez",
+  "{n} times"
+ ],
+ [
+  "{n} gün önce",
+  "{n} days ago"
+ ],
+ [
+  "bugün",
+  "today"
+ ],
+ [
+  "Çalınıyor ({n} parça).",
+  "Playing ({n} tracks)."
+ ],
+ [
+  "Liste oluşturuldu: {t}",
+  "List created: {t}"
+ ],
+ [
+  "Çalınacak parça yok.",
+  "No tracks to play."
  ]
 ];
   const EXACT = new Map(), PATS = [];
@@ -3231,11 +3511,17 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
   }
   /* Bir parça en az 30 sn gerçekten çalındıysa "dinlendi" sayılır; 10 sn dolmadan elle atlanırsa sanatçı hafifçe geriye gider. */
   let lis = { vid: '', sec: 0, done: false, t: 0 };
+  function logPlay(vid) {
+    if (!taste.on || !vid) return;
+    state.ph.push([Date.now(), vid]);
+    if (state.ph.length > 2500) state.ph.splice(0, state.ph.length - 2500);
+    save();
+  }
   function trackListen() {
     const now = Date.now(), dt = lis.t ? Math.min(2000, now - lis.t) : 0; lis.t = now;
     const n = state.now; if (!n) return;
     if (lis.vid !== n.vid) { lis = { vid: n.vid, sec: 0, done: false, t: now }; return; }
-    if (playing && !lis.done) { lis.sec += dt / 1000; if (lis.sec >= 30) { lis.done = true; learn(curItem(), 1); recAuto(); } }
+    if (playing && !lis.done) { lis.sec += dt / 1000; if (lis.sec >= 30) { lis.done = true; learn(curItem(), 1); logPlay(lis.vid); recAuto(); } }
   }
   function noteSkip() {
     const n = state.now;
@@ -3349,6 +3635,24 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     if (wait <= 0) { recRefresh(true); return; }
     if (!recTimer) recTimer = setTimeout(() => { recTimer = 0; if (R.stale && taste.au && !$('#panelRec').hidden) recRefresh(true); }, wait + 50);
   }
+  /* Radyo modu: liste ve sıra bittiğinde öneri listesinden bir sonraki parçayı kendiliğinden çalar; liste azalınca yenisini arar. */
+  let radioBusy = false;
+  async function radioNext() {
+    if (radioBusy) return; radioBusy = true;
+    try {
+      const fresh = () => R.items.find(it => !bad.has(it.id) && !state.recent.slice(0, 60).includes(it.id));
+      let it = fresh();
+      if (!it) {
+        if (!R.busy) await recRefresh(true);
+        for (let i = 0; i < 24 && R.busy; i++) await new Promise(r => setTimeout(r, 500));
+        it = fresh();
+      }
+      if (!it) { toast('Radyo: öneri bulunamadı.', 'warn'); playing = false; renderControls(); return; }
+      R.items = R.items.filter(x => x.id !== it.id);
+      errStreak = 0; renderRec(); playExt(it);
+      if (R.items.length < 3 && !R.busy && Date.now() - R.at > 60000) recRefresh(true);
+    } finally { radioBusy = false; }
+  }
   function recOpen() {
     if (R.busy) return;
     if (R.status === 'idle' || R.status === 'cold' || (R.at && Date.now() - R.at > 30 * 60000) || (R.stale && taste.au && Date.now() - R.at >= REC_GAP)) recRefresh(true);
@@ -3374,17 +3678,19 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     }
     return out;
   }
-  function playRecs() {
-    let list = R.items.filter(x => !bad.has(x.id));
-    if (!list.length) { toast('Çalınacak öneri yok.', 'warn'); return; }
+  function playMany(src, msg) {
+    let list = src.filter(x => !bad.has(x.id));
+    if (!list.length) { toast(msg ? 'Çalınacak parça yok.' : 'Çalınacak öneri yok.', 'warn'); return; }
     if (state.shuffle) list = recOrder(list);
+    snap('Sıra değişikliği');
     const ids = new Set(list.map(x => x.id));
     const rest = state.queue.filter(x => !ids.has(x.id));
     state.queue = [...list.map(x => ({ id: x.id, title: x.title, author: x.author || '' })), ...rest].slice(0, 200);
     save(); renderQueue();
-    toast('Öneriler çalınıyor (' + Math.min(list.length, 200) + ' parça).', 'ok');
+    toast(msg ? 'Çalınıyor (' + Math.min(list.length, 200) + ' parça).' : 'Öneriler çalınıyor (' + Math.min(list.length, 200) + ' parça).', 'ok');
     errStreak = 0; playQueued(0);
   }
+  const playRecs = () => playMany(R.items, '');
   function dismissRec(it, artist) {
     const ak = authorKey(it.author);
     if (artist && ak) {
@@ -3437,6 +3743,8 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#btnRecOn').setAttribute('aria-pressed', String(taste.on));
     $('#btnRecRefresh').disabled = R.busy;
     $('#btnRecPlay').disabled = !R.items.length;
+    $('#btnRadio').textContent = 'Radyo: ' + (state.radio ? 'açık' : 'kapalı');
+    $('#btnRadio').setAttribute('aria-pressed', String(state.radio));
     $('#btnRecAuto').textContent = 'Otomatik güncelle: ' + (taste.au ? 'açık' : 'kapalı');
     $('#btnRecAuto').setAttribute('aria-pressed', String(taste.au));
     if (document.activeElement !== $('#recEx')) $('#recEx').value = String(Math.round(taste.ex * 100));
@@ -3460,6 +3768,47 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     })));
   }
 
+  /* ——— Akıllı listeler: dinleme geçmişinden (yalnızca bu cihazda) otomatik oluşur ——— */
+  let smKind = 'top';
+  const SM_NOTES = { top: 'Listelerindeki parçalardan en çok dinlediklerin (30 sn’den uzun dinlemeler sayılır).', recent: 'Son 30 günde dinlediklerin.', never: 'Listelerinde olup hiç dinlemediğin parçalar.', year: 'Geçen yıl bu günlerde (±7 gün) dinlediklerin.' };
+  const SM_NAMES = { top: 'En çok dinlenen', recent: 'Son 30 gün', never: 'Hiç dinlenmemiş', year: 'Geçen yıl bu günler' };
+  function smCompute(kind) {
+    const lib = new Map(); state.playlists.forEach(p => p.items.forEach(x => { if (!lib.has(x.id)) lib.set(x.id, x); }));
+    const now = Date.now(), DAY = 864e5, ph = state.ph, out = [];
+    if (kind === 'top') {
+      const c = new Map(); ph.forEach(([, id]) => c.set(id, (c.get(id) || 0) + 1));
+      [...c].filter(([id]) => lib.has(id)).sort((a, b) => b[1] - a[1]).slice(0, 50).forEach(([id, n]) => out.push({ it: lib.get(id), note: n + ' kez' }));
+    } else if (kind === 'recent') {
+      const m = new Map();
+      for (const [id, t] of Object.entries(state.lp)) if (now - t <= 30 * DAY && lib.has(id)) m.set(id, t);
+      ph.forEach(([t, id]) => { if (now - t <= 30 * DAY && lib.has(id) && !(m.get(id) >= t)) m.set(id, t); });
+      [...m].sort((a, b) => b[1] - a[1]).slice(0, 100).forEach(([id, t]) => { const d = Math.floor((now - t) / DAY); out.push({ it: lib.get(id), note: d < 1 ? 'bugün' : d + ' gün önce' }); });
+    } else if (kind === 'never') {
+      const seen = new Set(ph.map(x => x[1]));
+      for (const [id, it] of lib) if (!seen.has(id) && !state.lp[id]) { out.push({ it, note: '' }); if (out.length >= 200) break; }
+    } else if (kind === 'year') {
+      const d0 = new Date(now); d0.setFullYear(d0.getFullYear() - 1); const c = d0.getTime(), m = new Map();
+      ph.forEach(([t, id]) => { if (Math.abs(t - c) <= 7 * DAY && lib.has(id) && !m.has(id)) m.set(id, t); });
+      [...m].sort((a, b) => a[1] - b[1]).slice(0, 100).forEach(([id, t]) => out.push({ it: lib.get(id), note: new Date(t).toISOString().slice(0, 10) }));
+    }
+    return out;
+  }
+  const plOf = id => state.playlists.find(p => p.items.some(x => x.id === id)) || active();
+  function renderSm() {
+    for (const b of document.querySelectorAll('#smKinds [data-k]')) b.setAttribute('aria-pressed', String(b.dataset.k === smKind));
+    $('#smNote').textContent = SM_NOTES[smKind];
+    const rows = smCompute(smKind), ul = $('#smItems');
+    $('#smCount').textContent = rows.length + ' / ' + SM_NAMES[smKind];
+    $('#smPlay').disabled = $('#smSave').disabled = !rows.length;
+    if (!rows.length) { ul.replaceChildren(el('li', { class: 'hint' }, 'Henüz gösterilecek parça yok. Dinleme geçmişi yalnızca Öğrenme açıkken tutulur ve bir parça 30 sn çalınca sayılır.')); return; }
+    ul.replaceChildren(...rows.map(({ it, note }) => rowEl(it, {
+      why: note || null,
+      playing: !!state.now && state.now.vid === it.id,
+      main: () => { errStreak = 0; bad.delete(it.id); playVid(plOf(it.id).id, it.id); },
+      acts: [ibtn('queue', 'Sıraya ekle', () => addQueue(it))]
+    })));
+  }
+  function smItems() { return smCompute(smKind).map(r => r.it); }
   /* ——— Depolama göstergesi ———
      Tarayıcı localStorage alanı küçüktür (genelde ~5 MB, siteye göre paylaşılır). Kullanımı ölçüp %80'de uyarır. */
   const PFX = 'Web_Music_Player_by_SoftArchX.', STO_LIMIT = 5 * 1024 * 1024;
@@ -3743,6 +4092,18 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
     $('#tabQueue').addEventListener('click', () => setTab('queue'));
     $('#tabRec').addEventListener('click', () => setTab('rec'));
     $('#btnRecPlay').addEventListener('click', playRecs);
+    $('#tabSmart').addEventListener('click', () => setTab('smart'));
+    document.querySelectorAll('#smKinds [data-k]').forEach(b => b.addEventListener('click', () => { smKind = b.dataset.k; renderSm(); }));
+    $('#smPlay').addEventListener('click', () => playMany(smItems(), 'sm'));
+    $('#smSave').addEventListener('click', () => {
+      const items = smItems(); if (!items.length) return;
+      snap('Liste oluşturma');
+      const pl = newPlaylist(SM_NAMES[smKind] + ' ' + new Date().toISOString().slice(0, 10));
+      items.forEach(x => pl.items.push({ id: x.id, title: x.title, author: x.author || '' }));
+      bump(items.length); state.activeId = pl.id; setTab('list'); save(); render();
+      toast('Liste oluşturuldu: ' + pl.name, 'ok', 6000, undoAct);
+    });
+    $('#btnRadio').addEventListener('click', () => { state.radio = !state.radio; save(); renderRec(); toast(state.radio ? 'Radyo açık.' : 'Radyo kapalı.', 'ok'); });
     $('#btnRecAuto').addEventListener('click', () => { taste.au = !taste.au; saveTaste(); renderRec(); toast(taste.au ? 'Otomatik güncelleme açık.' : 'Otomatik güncelleme kapalı.', 'ok'); if (taste.au && R.stale) recAuto(); });
     $('#btnRecRefresh').addEventListener('click', () => { R.status = 'idle'; recRefresh(); });
     $('#btnRecOn').addEventListener('click', () => { taste.on = !taste.on; saveTaste(); renderRec(); toast(taste.on ? 'Öğrenme açık.' : 'Öğrenme kapalı.', 'ok'); });
@@ -3753,6 +4114,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       toast('Öneri profili sıfırlandı.', 'ok');
       if (!$('#panelRec').hidden) recRefresh(); else renderRec();
     });
+    $('#btnUndo').append(icon('undo')); $('#btnUndo').addEventListener('click', undo);
     $('#btnQR').append(icon('qr')); $('#btnLike').append(icon('like')); $('#btnDislike').append(icon('like'));
     $('#btnQR').addEventListener('click', showQR);
     $('#qrCopy').addEventListener('click', () => { if (qrCur) copyText(qrCur.url); });
@@ -3802,7 +4164,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       try { player.seekTo($('#seek').value / 1000 * player.getDuration(), true); } catch { /* yoksay */ }
       dragging = false;
     });
-    $('#btnQClear').addEventListener('click', () => { state.queue.length = 0; save(); renderQueue(); });
+    $('#btnQClear').addEventListener('click', () => { snap('Sıra temizleme'); state.queue.length = 0; save(); renderQueue(); toast('Sıra temizlendi.', 'ok', 7000, undoAct); });
 
     $('#btnNewPl').addEventListener('click', async () => {
       const n = await ask({ title: 'Yeni çalma listesi', input: true, placeholder: 'Liste adı', ok: 'Oluştur' });
@@ -3813,7 +4175,7 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       const pl = active();
       const n = await ask({ title: 'Listeyi yeniden adlandır', input: true, value: pl.name, ok: 'Kaydet' });
       if (!n) return;
-      pl.name = clean(n, 60) || pl.name; save(); render();
+      snap('Yeniden adlandırma'); pl.name = clean(n, 60) || pl.name; save(); render();
     });
     $('#btnDelPl').addEventListener('click', async () => {
       if (state.playlists.length < 2) { toast('Son listeyi silemezsin. İstersen adını değiştir.', 'warn'); return; }
@@ -3821,10 +4183,12 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
       const okay = await ask({ title: 'Listeyi sil', message: `“${pl.name}” ve içindeki ${pl.items.length} video silinecek. Bu geri alınamaz.`, ok: 'Sil', danger: true });
       if (!okay) return;
       const wasPlaying = state.now && state.now.plId === pl.id;
+      snap('Liste silme');
       bump(pl.items.length || 1);
       state.playlists = state.playlists.filter(p => p.id !== pl.id);
       state.activeId = state.playlists[0].id;
       if (wasPlaying) stopAll(); else { save(); render(); }
+      toast('Liste silindi: ' + pl.name, 'ok', 8000, undoAct);
     });
     $('#btnExport').addEventListener('click', exportData);
     $('#btnImport').addEventListener('click', () => $('#fileIn').click());
@@ -3861,6 +4225,11 @@ dialog input{width:100%;background:var(--bg);border:1px solid var(--line);border
           its[(k + (e.key === 'ArrowDown' ? 1 : -1) + its.length) % its.length].focus();
         }
         return;
+      }
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.target.closest('input,textarea,dialog,select')) {
+        const k = e.key.toLowerCase();
+        if (k === 'z' && !e.shiftKey) { e.preventDefault(); undo(); return; }
+        if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); redo(); return; }
       }
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.target.closest('input,textarea,dialog,select')) return;
